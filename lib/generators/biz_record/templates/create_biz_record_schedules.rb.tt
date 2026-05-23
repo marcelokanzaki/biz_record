@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+class CreateBizRecordSchedules < ActiveRecord::Migration<%= migration_version %>
+  def change
+    create_table :biz_record_schedules do |t|
+      t.references :schedulable, polymorphic: true, index: false
+      t.string :key, null: false, default: "default"
+      t.string :time_zone, null: false, default: "Etc/UTC"
+      t.public_send(configuration_column_type, :configuration, null: false)
+
+      t.timestamps
+    end
+
+    add_index :biz_record_schedules,
+              [:schedulable_type, :schedulable_id, :key],
+              name: "index_biz_record_schedules_on_schedulable_and_key"
+    add_index :biz_record_schedules, :key
+  end
+
+  private
+
+  def configuration_column_type
+    if connection.adapter_name.match?(/postgres/i)
+      :jsonb
+    else
+      :json
+    end
+  end
+end

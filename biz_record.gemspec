@@ -22,10 +22,15 @@ Gem::Specification.new do |spec|
     Dir[
       "LICENSE.txt",
       "README.md",
-      "lib/**/*.rb"
+      "lib/**/*"
     ]
   end
   spec.require_paths = ["lib"]
 
   spec.add_dependency "biz", "~> 1.8"
+  spec.add_dependency "activerecord", ">= 7.1", "< 9.0"
+
+  spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "sqlite3", "~> 2.0"
 end
