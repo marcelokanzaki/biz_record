@@ -4,6 +4,8 @@ require "date"
 
 module BizRecord
   class Schedule < ActiveRecord::Base
+    include WeeklyHours
+
     self.table_name = "biz_record_schedules"
 
     DEFAULT_KEY = "default"

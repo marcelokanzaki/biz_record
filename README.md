@@ -49,6 +49,34 @@ account.biz_record_schedules.create!(key: "support")
 `key` is the functional identifier for a schedule. There is no separate `name`
 column.
 
+## Editing Weekly Hours
+
+Applications should edit weekly hours through the schedule API instead of
+writing directly to the JSON column.
+
+```ruby
+schedule = BizRecord::Schedule.find_by!(key: "support")
+
+schedule.hours_for(:mon)
+# => [["09:00", "12:00"], ["13:00", "17:00"]]
+
+schedule.add_hours(:mon, "09:00", "12:00")
+schedule.add_hours(:mon, "13:00", "17:00")
+
+schedule.replace_hours(:mon, [
+  ["08:00", "12:00"],
+  ["14:00", "18:00"]
+])
+
+schedule.remove_hours(:mon, "08:00", "12:00")
+schedule.clear_hours(:mon)
+schedule.save!
+```
+
+Weekdays use the same three-letter keys as `biz`: `sun`, `mon`, `tue`, `wed`,
+`thu`, `fri`, and `sat`. Times are normalized to `HH:MM`, sorted by start time,
+and overlapping ranges are rejected.
+
 ## Migration
 
 In a Rails application:
