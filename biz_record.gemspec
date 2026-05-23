@@ -5,13 +5,13 @@ require_relative "lib/biz_record/version"
 Gem::Specification.new do |spec|
   spec.name = "biz_record"
   spec.version = BizRecord::VERSION
-  spec.authors = ["Marcelo"]
-  spec.email = []
-
+  spec.authors = [ "Marcelo Kanzaki" ]
+  spec.email = "marcelo@hey.com"
+  spec.homepage = "https://github.com/marcelokanzaki/biz_record"
   spec.summary = "Persistence layer for the biz gem."
   spec.description = "Persistence layer for schedules used by the biz gem."
-  spec.homepage = "https://github.com/marcelo/biz_record"
   spec.license = "MIT"
+
   spec.required_ruby_version = ">= 3.1"
 
   spec.metadata["homepage_uri"] = spec.homepage
@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
       "lib/**/*"
     ]
   end
+
   spec.require_paths = ["lib"]
 
   spec.add_dependency "biz", "~> 1.8"
