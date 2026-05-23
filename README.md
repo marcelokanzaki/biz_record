@@ -96,6 +96,31 @@ schedule.save!
 
 Dates are normalized, sorted, and deduplicated before being stored.
 
+## Editing Shifts
+
+Shifts are date-specific business hours. In `biz`, they override the recurring
+weekly hours for that date.
+
+```ruby
+schedule.shifts_for("2026-06-01")
+# => [["10:00", "14:00"], ["15:00", "18:00"]]
+
+schedule.add_shift("2026-06-01", "10:00", "14:00")
+
+schedule.replace_shifts("2026-06-01", [
+  ["09:00", "12:00"],
+  ["13:00", "17:00"]
+])
+
+schedule.remove_shift("2026-06-01", "09:00", "12:00")
+schedule.clear_shifts("2026-06-01")
+schedule.clear_all_shifts
+schedule.save!
+```
+
+Dates are persisted as ISO 8601 strings. Times are normalized to `HH:MM`,
+sorted by start time, and overlapping ranges are rejected.
+
 ## Migration
 
 In a Rails application:

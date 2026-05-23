@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "date"
-
 module BizRecord
   module Holidays
+    include DateValues
+
     def add_holiday(date)
       replace_holidays(holidays + [date])
     end
@@ -40,20 +40,7 @@ module BizRecord
     end
 
     def normalize_holiday(date)
-      case date
-      when ::Date
-        date.iso8601
-      when ::Time
-        ::Date.new(date.year, date.month, date.day).iso8601
-      else
-        if date.respond_to?(:year) && date.respond_to?(:month) && date.respond_to?(:day)
-          ::Date.new(date.year, date.month, date.day).iso8601
-        else
-          ::Date.iso8601(String(date)).iso8601
-        end
-      end
-    rescue ArgumentError
-      raise ArgumentError, "holiday must be a valid ISO 8601 date"
+      normalize_date_value(date, message: "holiday must be a valid ISO 8601 date")
     end
   end
 end

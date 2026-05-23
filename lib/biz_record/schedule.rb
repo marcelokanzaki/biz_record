@@ -5,6 +5,7 @@ require "date"
 module BizRecord
   class Schedule < ActiveRecord::Base
     include Holidays
+    include Shifts
     include WeeklyHours
 
     self.table_name = "biz_record_schedules"
