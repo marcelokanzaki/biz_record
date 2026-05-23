@@ -107,6 +107,12 @@ module BizRecord
     end
 
     def test_replaces_missing_sections_with_defaults
+      BizRecord.configure do |config|
+        config.default_hours = {
+          sat: [["10:00", "14:00"]]
+        }
+      end
+
       schedule = Schedule.new(
         configuration: {
           hours: {
@@ -130,7 +136,14 @@ module BizRecord
 
       schedule.replace_configuration(holidays: ["2026-01-01"])
 
-      assert_equal Schedule::DEFAULT_HOURS, schedule.hours
+      assert_equal(
+        {
+          "sat" => {
+            "10:00" => "14:00"
+          }
+        },
+        schedule.hours
+      )
       assert_equal({}, schedule.shifts)
       assert_equal({}, schedule.breaks)
       assert_equal ["2026-01-01"], schedule.holidays

@@ -20,19 +20,26 @@ module BizRecord
 
     DEFAULT_KEY = "default"
     DEFAULT_TIME_ZONE = "Etc/UTC"
-    DEFAULT_HOURS = {
-      "mon" => { "09:00" => "17:00" },
-      "tue" => { "09:00" => "17:00" },
-      "wed" => { "09:00" => "17:00" },
-      "thu" => { "09:00" => "17:00" },
-      "fri" => { "09:00" => "17:00" }
-    }.freeze
+    DEFAULT_HOURS = BizRecord::Configuration::DEFAULT_HOURS
     DEFAULT_CONFIGURATION = {
       "hours" => DEFAULT_HOURS,
       "shifts" => {},
       "breaks" => {},
       "holidays" => []
     }.freeze
+
+    def self.default_hours
+      BizRecord.configuration.default_hours
+    end
+
+    def self.default_configuration
+      {
+        "hours" => default_hours,
+        "shifts" => {},
+        "breaks" => {},
+        "holidays" => []
+      }
+    end
 
     belongs_to :schedulable, polymorphic: true, optional: false
 
@@ -82,7 +89,7 @@ module BizRecord
     end
 
     def configuration_data
-      deep_stringify_keys(DEFAULT_CONFIGURATION).merge(deep_stringify_keys(self[:configuration] || {}))
+      deep_stringify_keys(self.class.default_configuration).merge(deep_stringify_keys(self[:configuration] || {}))
     end
 
     def biz_hours

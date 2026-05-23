@@ -35,6 +35,11 @@ class Account < ActiveRecord::Base
 end
 
 module BizRecordTestHelpers
+  def before_setup
+    super
+    BizRecord.reset_configuration!
+  end
+
   def account
     @account ||= Account.create!(name: "Acme")
   end

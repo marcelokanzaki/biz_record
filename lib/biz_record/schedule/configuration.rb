@@ -22,7 +22,7 @@ module BizRecord::Schedule::Configuration
 
     self.configuration = {
       "hours" => normalize_weekly_hours_configuration(
-        normalized_attributes.fetch("hours", self.class::DEFAULT_HOURS)
+        normalized_attributes.fetch("hours", self.class.default_hours)
       ),
       "shifts" => normalize_date_ranges_configuration(
         normalized_attributes.fetch("shifts", {}),

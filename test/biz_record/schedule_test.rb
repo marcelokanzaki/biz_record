@@ -18,6 +18,27 @@ module BizRecord
       assert schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 10))
     end
 
+    def test_uses_configured_default_hours
+      BizRecord.configure do |config|
+        config.default_hours = {
+          sun: [["10:00", "14:00"]]
+        }
+      end
+
+      schedule = create_schedule!
+
+      assert_equal(
+        {
+          "sun" => {
+            "10:00" => "14:00"
+          }
+        },
+        schedule.hours
+      )
+      assert schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 17, 11))
+      refute schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 11))
+    end
+
     def test_can_belong_to_a_schedulable
       schedule = Schedule.create!(schedulable: account, key: "support")
 

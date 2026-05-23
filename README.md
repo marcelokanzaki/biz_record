@@ -19,6 +19,28 @@ bin/rails generate biz_record:install
 bin/rails db:migrate
 ```
 
+## Configuration
+
+By default, schedules use Monday to Friday, `09:00` to `17:00`. To change the
+weekly hours applied when schedules are created without explicit hours, create
+an optional initializer at `config/initializers/biz_record.rb`:
+
+```ruby
+BizRecord.configure do |config|
+  config.default_hours = {
+    mon: { "08:00" => "12:00", "13:00" => "17:00" },
+    tue: { "08:00" => "12:00", "13:00" => "17:00" },
+    wed: { "08:00" => "12:00", "13:00" => "17:00" },
+    thu: { "08:00" => "12:00", "13:00" => "17:00" },
+    fri: { "08:00" => "12:00", "13:00" => "16:00" }
+  }
+end
+```
+
+Weekdays use the same three-letter keys as `biz`: `sun`, `mon`, `tue`, `wed`,
+`thu`, `fri`, and `sat`. Times are normalized to `HH:MM`, sorted by start time,
+and overlapping ranges are rejected.
+
 ## Model
 
 The main model is `BizRecord::Schedule`.

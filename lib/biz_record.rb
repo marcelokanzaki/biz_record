@@ -6,10 +6,23 @@ require "biz"
 require_relative "biz_record/version"
 require_relative "biz_record/support/date_values"
 require_relative "biz_record/support/time_ranges"
+require_relative "biz_record/configuration"
 require_relative "biz_record/schedule"
 require_relative "biz_record/schedulable"
 
 module BizRecord
+  def self.configure
+    yield configuration
+  end
+
+  def self.configuration
+    @configuration ||= Configuration.new
+  end
+
+  def self.reset_configuration!
+    @configuration = Configuration.new
+  end
+
   def self.install_schedulable
     ActiveSupport.on_load(:active_record) do
       include BizRecord::Schedulable
