@@ -49,6 +49,40 @@ account.biz_record_schedules.create!(key: "support")
 `key` is the functional identifier for a schedule. There is no separate `name`
 column.
 
+## Replacing Configuration
+
+Use `replace_configuration` when an application receives the full schedule state
+from a form, API, or seed file. Missing sections are reset to their defaults:
+weekly hours use the default business week, while shifts, breaks, and holidays
+are cleared.
+
+```ruby
+schedule.replace_configuration(
+  hours: {
+    mon: [
+      ["09:00", "12:00"],
+      ["13:00", "17:00"]
+    ]
+  },
+  shifts: {
+    "2026-06-01" => {
+      "10:00" => "14:00"
+    }
+  },
+  breaks: {
+    "2026-06-01" => [
+      ["12:00", "13:00"]
+    ]
+  },
+  holidays: ["2026-12-25"]
+)
+
+schedule.to_biz_configuration
+```
+
+The stored configuration is normalized to string keys, ISO 8601 dates, sorted
+time ranges, and `HH:MM` times.
+
 ## Editing Weekly Hours
 
 Applications should edit weekly hours through the schedule API instead of

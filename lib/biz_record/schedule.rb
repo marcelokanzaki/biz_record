@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
 require "date"
+require_relative "support/date_values"
+require_relative "support/time_ranges"
 
 module BizRecord
   class Schedule < ActiveRecord::Base
-    include Breaks
-    include Holidays
-    include Shifts
-    include WeeklyHours
-
     self.table_name = "biz_record_schedules"
 
     DEFAULT_KEY = "default"
@@ -131,5 +128,21 @@ module BizRecord
     rescue Biz::Error::Configuration, ArgumentError, KeyError, TypeError, NoMethodError => error
       errors.add(:configuration, error.message)
     end
+  end
+end
+
+require_relative "schedule/breaks"
+require_relative "schedule/configuration"
+require_relative "schedule/holidays"
+require_relative "schedule/shifts"
+require_relative "schedule/weekly_hours"
+
+module BizRecord
+  class Schedule < ActiveRecord::Base
+    include Breaks
+    include Configuration
+    include Holidays
+    include Shifts
+    include WeeklyHours
   end
 end
