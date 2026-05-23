@@ -77,6 +77,25 @@ Weekdays use the same three-letter keys as `biz`: `sun`, `mon`, `tue`, `wed`,
 `thu`, `fri`, and `sat`. Times are normalized to `HH:MM`, sorted by start time,
 and overlapping ranges are rejected.
 
+## Editing Holidays
+
+Holidays are persisted as ISO 8601 dates inside the schedule configuration.
+
+```ruby
+schedule.add_holiday("2026-12-25")
+schedule.add_holiday(Date.new(2026, 1, 1))
+
+schedule.holiday?("2026-12-25")
+# => true
+
+schedule.replace_holidays(["2026-01-01", "2026-12-25"])
+schedule.remove_holiday("2026-01-01")
+schedule.clear_holidays
+schedule.save!
+```
+
+Dates are normalized, sorted, and deduplicated before being stored.
+
 ## Migration
 
 In a Rails application:
