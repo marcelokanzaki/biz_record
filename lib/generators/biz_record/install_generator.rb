@@ -15,6 +15,18 @@ module BizRecord
                            "db/migrate/create_biz_record_schedules.rb"
       end
 
+      def show_next_steps
+        say <<~MESSAGE
+
+          BizRecord installed.
+
+          Next steps:
+            bin/rails db:migrate
+            Add has_biz_schedule to each model that owns a schedule.
+
+        MESSAGE
+      end
+
       def self.next_migration_number(dirname)
         ActiveRecord::Generators::Base.next_migration_number(dirname)
       end

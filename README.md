@@ -12,6 +12,13 @@ Add this line to your application's Gemfile:
 gem "biz_record"
 ```
 
+Then install the migration:
+
+```sh
+bin/rails generate biz_record:install
+bin/rails db:migrate
+```
+
 ## Model
 
 The main model is `BizRecord::Schedule`.
@@ -26,7 +33,8 @@ class Account < ApplicationRecord
 end
 ```
 
-The DSL defines regular `has_one` associations:
+The DSL defines regular `has_one` associations. It is available automatically
+on Active Record models after requiring the gem:
 
 ```ruby
 account.biz_schedule
@@ -204,15 +212,9 @@ schedule.save!
 Dates are persisted as ISO 8601 strings. Times are normalized to `HH:MM`,
 sorted by start time, and overlapping ranges are rejected.
 
-## Migration
+## Database Support
 
-In a Rails application:
-
-```sh
-bin/rails generate biz_record:install
-bin/rails db:migrate
-```
-
-The generated migration uses `jsonb` on PostgreSQL and `json` on other
-Active Record adapters. The model does not depend on querying inside the JSON
-column, which keeps the first persistence contract portable across databases.
+The install generator creates a migration that uses `jsonb` on PostgreSQL and
+`json` on other Active Record adapters. The model does not depend on querying
+inside the JSON column, which keeps the first persistence contract portable
+across databases.
