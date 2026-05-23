@@ -29,7 +29,9 @@ ActiveRecord::Schema.define do
 end
 
 class Account < ActiveRecord::Base
-  has_many :biz_record_schedules, as: :schedulable, class_name: "BizRecord::Schedule"
+  has_biz_schedule
+  has_biz_schedule :support
+  has_biz_schedule :dev
 end
 
 module BizRecordTestHelpers

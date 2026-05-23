@@ -22,7 +22,7 @@ module BizRecord
       schedule = Schedule.create!(schedulable: account, key: "support")
 
       assert_equal account, schedule.schedulable
-      assert_equal [schedule], account.biz_record_schedules.to_a
+      assert_equal schedule, account.support_schedule
     end
 
     def test_converts_configuration_to_biz_schedule

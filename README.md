@@ -16,6 +16,32 @@ gem "biz_record"
 
 The main model is `BizRecord::Schedule`.
 
+Declare schedules on the model that owns them:
+
+```ruby
+class Account < ApplicationRecord
+  has_biz_schedule
+  has_biz_schedule :support
+  has_biz_schedule :dev
+end
+```
+
+The DSL defines regular `has_one` associations:
+
+```ruby
+account.biz_schedule
+account.support_schedule
+account.dev_schedule
+```
+
+Use the Rails association API to build or create schedules:
+
+```ruby
+account.create_biz_schedule!
+account.create_support_schedule!
+account.build_dev_schedule
+```
+
 ```ruby
 schedule = BizRecord::Schedule.create!(
   schedulable: account,
@@ -42,7 +68,7 @@ schedule.to_biz_schedule.in_hours?(Time.current)
 application record:
 
 ```ruby
-account.biz_record_schedules.create!(key: "support")
+account.create_support_schedule!
 ```
 
 `key` is the functional identifier within that schedulable. There is no separate
