@@ -4,6 +4,7 @@ require "date"
 
 module BizRecord
   class Schedule < ActiveRecord::Base
+    include Breaks
     include Holidays
     include Shifts
     include WeeklyHours

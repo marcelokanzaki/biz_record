@@ -121,6 +121,30 @@ schedule.save!
 Dates are persisted as ISO 8601 strings. Times are normalized to `HH:MM`,
 sorted by start time, and overlapping ranges are rejected.
 
+## Editing Breaks
+
+Breaks are date-specific inactive periods within business hours.
+
+```ruby
+schedule.breaks_for("2026-06-01")
+# => [["12:00", "13:00"], ["15:00", "15:30"]]
+
+schedule.add_break("2026-06-01", "12:00", "13:00")
+
+schedule.replace_breaks("2026-06-01", [
+  ["12:00", "13:00"],
+  ["15:00", "15:30"]
+])
+
+schedule.remove_break("2026-06-01", "12:00", "13:00")
+schedule.clear_breaks("2026-06-01")
+schedule.clear_all_breaks
+schedule.save!
+```
+
+Dates are persisted as ISO 8601 strings. Times are normalized to `HH:MM`,
+sorted by start time, and overlapping ranges are rejected.
+
 ## Migration
 
 In a Rails application:
