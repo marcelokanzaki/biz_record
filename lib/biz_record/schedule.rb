@@ -57,18 +57,6 @@ module BizRecord
       end
     end
 
-    alias to_schedule to_biz_schedule
-
-    def to_biz_config
-      {
-        hours: biz_hours,
-        shifts: biz_date_hours("shifts"),
-        breaks: biz_date_hours("breaks"),
-        holidays: configuration_data.fetch("holidays").map { |date| ::Date.iso8601(String(date)) },
-        time_zone: time_zone
-      }
-    end
-
     def hours
       configuration_data.fetch("hours")
     end
