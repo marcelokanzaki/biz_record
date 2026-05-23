@@ -34,11 +34,12 @@ module BizRecord
       "holidays" => []
     }.freeze
 
-    belongs_to :schedulable, polymorphic: true, optional: true
+    belongs_to :schedulable, polymorphic: true, optional: false
 
     before_validation :apply_defaults
 
     validates :key, presence: true
+    validates :schedulable, presence: true
     validates :time_zone, presence: true
     validates :configuration, presence: true
     validates :key, uniqueness: { scope: %i[schedulable_type schedulable_id] }

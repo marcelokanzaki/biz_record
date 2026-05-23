@@ -55,7 +55,7 @@ module BizRecord
     end
 
     def test_replaces_and_normalizes_the_full_configuration
-      schedule = Schedule.new
+      schedule = build_schedule
 
       schedule.replace_configuration(
         hours: {
@@ -137,7 +137,7 @@ module BizRecord
     end
 
     def test_persists_replaced_configuration
-      schedule = Schedule.new
+      schedule = build_schedule
 
       schedule.replace_configuration(
         hours: {

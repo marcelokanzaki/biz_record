@@ -15,14 +15,35 @@ ActiveRecord::Schema.define do
   end
 
   create_table :biz_record_schedules, force: true do |t|
-    t.references :schedulable, polymorphic: true, index: false
+    t.references :schedulable, polymorphic: true, null: false, index: false
     t.string :key, null: false, default: "default"
     t.string :time_zone, null: false, default: "Etc/UTC"
     t.json :configuration, null: false
     t.timestamps
   end
+
+  add_index :biz_record_schedules,
+            [:schedulable_type, :schedulable_id, :key],
+            unique: true,
+            name: "index_biz_record_schedules_on_schedulable_and_key"
 end
 
 class Account < ActiveRecord::Base
   has_many :biz_record_schedules, as: :schedulable, class_name: "BizRecord::Schedule"
 end
+
+module BizRecordTestHelpers
+  def account
+    @account ||= Account.create!(name: "Acme")
+  end
+
+  def build_schedule(attributes = {})
+    BizRecord::Schedule.new({ schedulable: account }.merge(attributes))
+  end
+
+  def create_schedule!(attributes = {})
+    BizRecord::Schedule.create!({ schedulable: account }.merge(attributes))
+  end
+end
+
+Minitest::Test.include BizRecordTestHelpers

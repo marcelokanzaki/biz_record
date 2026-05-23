@@ -10,7 +10,7 @@ module BizRecord
     end
 
     def test_adds_holidays
-      schedule = Schedule.new
+      schedule = build_schedule
 
       schedule.add_holiday("2026-12-25")
       schedule.add_holiday(Date.new(2026, 1, 1))
@@ -67,7 +67,7 @@ module BizRecord
     end
 
     def test_persists_edited_holidays
-      schedule = Schedule.create!
+      schedule = create_schedule!
 
       schedule.add_holiday("2026-12-25")
       schedule.save!

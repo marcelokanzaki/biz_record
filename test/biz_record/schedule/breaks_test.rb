@@ -25,7 +25,7 @@ module BizRecord
     end
 
     def test_adds_breaks_to_a_date
-      schedule = Schedule.new
+      schedule = build_schedule
 
       schedule.add_break("2026-06-01", "12:00", "13:00")
       schedule.add_break(Date.new(2026, 6, 1), "15:00", "15:30")
@@ -115,7 +115,7 @@ module BizRecord
     end
 
     def test_persists_edited_breaks
-      schedule = Schedule.new
+      schedule = build_schedule
 
       schedule.add_break("2026-06-01", "12:00", "13:00")
       schedule.save!

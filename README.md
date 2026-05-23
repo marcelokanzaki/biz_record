@@ -38,16 +38,15 @@ schedule = BizRecord::Schedule.create!(
 schedule.to_biz_schedule.in_hours?(Time.current)
 ```
 
-`schedulable` is polymorphic and optional, so applications can keep both owned
-schedules and global schedules:
+`schedulable` is polymorphic and required. Each schedule belongs to one
+application record:
 
 ```ruby
-BizRecord::Schedule.create!(key: "default")
 account.biz_record_schedules.create!(key: "support")
 ```
 
-`key` is the functional identifier for a schedule. There is no separate `name`
-column.
+`key` is the functional identifier within that schedulable. There is no separate
+`name` column.
 
 ## Replacing Configuration
 

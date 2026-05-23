@@ -25,7 +25,7 @@ module BizRecord
     end
 
     def test_adds_shifts_to_a_date
-      schedule = Schedule.new
+      schedule = build_schedule
 
       schedule.add_shift("2026-06-01", "10:00", "14:00")
       schedule.add_shift(Date.new(2026, 6, 1), "15:00", "18:00")
@@ -115,7 +115,7 @@ module BizRecord
     end
 
     def test_persists_edited_shifts
-      schedule = Schedule.new
+      schedule = build_schedule
 
       schedule.add_shift("2026-06-01", "10:00", "14:00")
       schedule.save!

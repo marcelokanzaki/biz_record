@@ -25,7 +25,7 @@ module BizRecord
     end
 
     def test_adds_hours_to_a_weekday
-      schedule = Schedule.new(configuration: { hours: {} })
+      schedule = build_schedule(configuration: { hours: {} })
 
       schedule.add_hours(:mon, "9:00", "12:00")
       schedule.add_hours("mon", "13:00", "17:00")
@@ -91,7 +91,7 @@ module BizRecord
     end
 
     def test_persists_edited_hours
-      schedule = Schedule.new(configuration: { hours: {} })
+      schedule = build_schedule(configuration: { hours: {} })
 
       schedule.add_hours(:mon, "09:00", "17:00")
       schedule.save!

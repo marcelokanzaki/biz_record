@@ -10,7 +10,7 @@ module BizRecord
     end
 
     def test_defaults_to_a_valid_biz_schedule
-      schedule = Schedule.create!
+      schedule = create_schedule!
 
       assert_equal "default", schedule.key
       assert_equal "Etc/UTC", schedule.time_zone
@@ -19,7 +19,6 @@ module BizRecord
     end
 
     def test_can_belong_to_a_schedulable
-      account = Account.create!(name: "Acme")
       schedule = Schedule.create!(schedulable: account, key: "support")
 
       assert_equal account, schedule.schedulable
@@ -27,7 +26,7 @@ module BizRecord
     end
 
     def test_converts_configuration_to_biz_schedule
-      schedule = Schedule.create!(
+      schedule = create_schedule!(
         key: "support",
         time_zone: "America/Sao_Paulo",
         configuration: {
@@ -50,6 +49,29 @@ module BizRecord
 
       refute schedule.valid?
       assert_includes schedule.errors[:time_zone], "is not a valid IANA time zone"
+    end
+
+    def test_requires_a_schedulable
+      schedule = Schedule.new
+
+      refute schedule.valid?
+      assert schedule.errors[:schedulable].any?
+    end
+
+    def test_requires_key_to_be_unique_within_schedulable
+      create_schedule!(key: "support")
+      duplicate = build_schedule(key: "support")
+
+      refute duplicate.valid?
+      assert duplicate.errors[:key].any?
+    end
+
+    def test_allows_same_key_for_different_schedulables
+      create_schedule!(key: "support")
+      other_account = Account.create!(name: "Other")
+      schedule = Schedule.new(schedulable: other_account, key: "support")
+
+      assert schedule.valid?
     end
 
     def test_requires_configuration_that_biz_can_use
