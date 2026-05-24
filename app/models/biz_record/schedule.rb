@@ -1,20 +1,16 @@
 # frozen_string_literal: true
 
+require "active_record"
+require "biz"
 require "date"
 
 module BizRecord
   class Schedule < ActiveRecord::Base
-    require_relative "schedule/configuration"
-    require_relative "schedule/breaks"
-    require_relative "schedule/holidays"
-    require_relative "schedule/shifts"
-    require_relative "schedule/weekly_hours"
-
-    include Configuration
-    include Breaks
-    include Holidays
-    include Shifts
-    include WeeklyHours
+    include Schedule::Configuration
+    include Schedule::Breaks
+    include Schedule::Holidays
+    include Schedule::Shifts
+    include Schedule::WeeklyHours
 
     self.table_name = "biz_record_schedules"
 
@@ -53,7 +49,7 @@ module BizRecord
 
     has_many :intervals, as: :owner, class_name: "BizRecord::Interval", dependent: :delete_all
     has_many :days, class_name: "BizRecord::Day", dependent: :destroy, inverse_of: :schedule
-    has_many :shift_days, -> { order(:date) }, class_name: "BizRecord::Day::Shift", inverse_of: :schedule
+    has_many :shift_days, -> { order(:date) }, class_name: "BizRecord::Days::Shift", inverse_of: :schedule
 
     after_create :create_intervals_from_hours
     after_create :create_days_from_shifts

@@ -1,27 +1,8 @@
 # frozen_string_literal: true
 
 module BizRecord
-  class Day < ActiveRecord::Base
-    self.table_name = "biz_record_days"
-
-    belongs_to :schedule, class_name: "BizRecord::Schedule", inverse_of: :days
-
-    validates :schedule, presence: true
-    validates :date, presence: true
-    validates :type, presence: true
-    validates :date, uniqueness: { scope: %i[schedule_id type] }
-
-    def date_string
-      date&.iso8601
-    end
-
-    class Holiday < Day
-    end
-
-    class Break < Day
-    end
-
-    class Shift < Day
+  module Days
+    class Shift < BizRecord::Day
       has_many :intervals, as: :owner, class_name: "BizRecord::Interval", dependent: :delete_all
 
       after_update :sync_schedule_shifts_after_date_change, if: :saved_change_to_date?

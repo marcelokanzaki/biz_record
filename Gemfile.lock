@@ -4,6 +4,7 @@ PATH
     biz_record (0.1.0)
       activerecord (>= 7.1, < 9.0)
       biz (~> 1.8)
+      railties (>= 7.1, < 9.0)
 
 GEM
   remote: https://rubygems.org/
@@ -130,7 +131,6 @@ PLATFORMS
 DEPENDENCIES
   biz_record!
   minitest (~> 5.0)
-  railties (>= 7.1, < 9.0)
   rake (~> 13.0)
   sqlite3 (~> 2.0)
 
