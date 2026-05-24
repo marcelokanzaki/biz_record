@@ -1,0 +1,25 @@
+<h1>Edit <%= @weekday %> hours</h1>
+
+<% if @schedule.errors.any? %>
+  <ul>
+    <% @schedule.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= form_with scope: :hour, url: schedule_weekday_hour_path(@schedule, @weekday, @starts_at), method: :patch do |form| %>
+  <div>
+    <%= form.label :starts_at, "Starts at" %>
+    <%= form.time_select :starts_at, { minute_step: 5, ignore_date: true, default: time_select_value(@starts_at) } %>
+  </div>
+
+  <div>
+    <%= form.label :ends_at, "Ends at" %>
+    <%= form.time_select :ends_at, { minute_step: 5, ignore_date: true, default: time_select_value(@ends_at) } %>
+  </div>
+
+  <%= submit_tag "Save hours" %>
+<% end %>
+
+<p><%= link_to "Back to schedule", schedule_path(@schedule) %></p>

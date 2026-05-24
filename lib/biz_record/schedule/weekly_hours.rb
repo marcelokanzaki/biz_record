@@ -31,6 +31,26 @@ module BizRecord::Schedule::WeeklyHours
     end
   end
 
+  def replace_hour(weekday, starts_at, ends_at, replacement_starts_at, replacement_ends_at)
+    day = normalize_weekday(weekday)
+    current_range = normalize_time_range(starts_at, ends_at, label: "hours")
+    replacement_range = normalize_time_range(replacement_starts_at, replacement_ends_at, label: "hours")
+    replaced = false
+
+    next_ranges = hours_for(day).map do |range|
+      if range == current_range
+        replaced = true
+        replacement_range
+      else
+        range
+      end
+    end
+
+    raise ArgumentError, "hours range does not exist" unless replaced
+
+    replace_hours(day, next_ranges)
+  end
+
   def remove_hours(weekday, starts_at, ends_at)
     normalized_range = normalize_time_range(starts_at, ends_at, label: "hours")
     remaining_ranges = hours_for(weekday).reject { |range| range == normalized_range }

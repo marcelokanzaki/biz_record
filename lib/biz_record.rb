@@ -30,7 +30,9 @@ module BizRecord
   end
 end
 
-if defined?(Rails::Railtie)
+if defined?(Rails::Engine)
+  require_relative "biz_record/engine"
+elsif defined?(Rails::Railtie)
   require_relative "biz_record/railtie"
 else
   BizRecord.install_schedulable

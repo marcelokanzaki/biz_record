@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
     Dir[
       "LICENSE.txt",
       "README.md",
+      "app/**/*",
+      "config/routes.rb",
       "lib/**/*"
     ]
   end

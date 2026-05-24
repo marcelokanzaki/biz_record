@@ -64,6 +64,22 @@ module BizRecord
       assert_equal [["10:00", "14:00"]], schedule.hours_for(:sat)
     end
 
+    def test_replaces_a_single_hour_range
+      schedule = Schedule.new(
+        configuration: {
+          hours: {
+            mon: {
+              "08:00" => "17:00"
+            }
+          }
+        }
+      )
+
+      schedule.replace_hour(:mon, "08:00", "17:00", "08:00", "16:00")
+
+      assert_equal [["08:00", "16:00"]], schedule.hours_for(:mon)
+    end
+
     def test_removes_a_matching_hour_range
       schedule = Schedule.new(
         configuration: {
