@@ -41,7 +41,7 @@ Weekdays use the same three-letter keys as `biz`: `sun`, `mon`, `tue`, `wed`,
 `thu`, `fri`, and `sat`. Times are normalized to `HH:MM`, sorted by start time,
 and overlapping ranges are rejected.
 
-## Model
+## Models
 
 The main model is `BizRecord::Schedule`.
 
@@ -72,28 +72,6 @@ account.create_support_schedule!
 account.build_dev_schedule
 ```
 
-```ruby
-schedule = BizRecord::Schedule.create!(
-  schedulable: account,
-  key: "support",
-  time_zone: "America/Sao_Paulo",
-  configuration: {
-    hours: {
-      mon: { "09:00" => "17:00" },
-      tue: { "09:00" => "17:00" },
-      wed: { "09:00" => "17:00" },
-      thu: { "09:00" => "17:00" },
-      fri: { "09:00" => "17:00" }
-    },
-    shifts: {},
-    breaks: {},
-    holidays: []
-  }
-)
-
-schedule.to_biz_schedule.in_hours?(Time.current)
-```
-
 `schedulable` is polymorphic and required. Each schedule belongs to one
 application record:
 
@@ -104,86 +82,36 @@ account.create_support_schedule!
 `key` is the functional identifier within that schedulable. There is no separate
 `name` column.
 
-## Replacing Configuration
-
-Use `replace_configuration` when an application receives the full schedule state
-from a form, API, or seed file. Missing sections are reset to their defaults:
-weekly hours use the default business week, while shifts, breaks, and holidays
-are cleared.
+Schedules expose regular Active Record associations for the editable parts of a
+business schedule:
 
 ```ruby
-schedule.replace_configuration(
-  hours: {
-    mon: [
-      ["09:00", "12:00"],
-      ["13:00", "17:00"]
-    ]
-  },
-  shifts: {
-    "2026-06-01" => {
-      "10:00" => "14:00"
-    }
-  },
-  breaks: {
-    "2026-06-01" => [
-      ["12:00", "13:00"]
-    ]
-  },
-  holidays: ["2026-12-25"]
-)
-
-schedule.to_biz_configuration
+schedule.intervals
+schedule.shift_days
+schedule.break_days
+schedule.holiday_days
 ```
 
-The stored configuration is normalized to string keys, ISO 8601 dates, sorted
-time ranges, and `HH:MM` times.
+The `configuration` JSON column is a cache for `biz`. When an interval or day is
+saved or destroyed, it touches the schedule; the schedule then rebuilds the JSON
+from those associations.
+
+```ruby
+schedule.to_biz_schedule.in_hours?(Time.current)
+```
 
 ## Editing Weekly Hours
 
-Applications should edit weekly hours through the schedule API instead of
-writing directly to the JSON column.
+Weekly hours are intervals owned directly by the schedule. Weekdays use the same
+three-letter keys as `biz`: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, and `sat`.
 
 ```ruby
-schedule = BizRecord::Schedule.find_by!(key: "support")
-
-schedule.hours_for(:mon)
-# => [["09:00", "12:00"], ["13:00", "17:00"]]
-
-schedule.add_hours(:mon, "09:00", "12:00")
-schedule.add_hours(:mon, "13:00", "17:00")
-
-schedule.replace_hours(:mon, [
-  ["08:00", "12:00"],
-  ["14:00", "18:00"]
-])
-
-schedule.remove_hours(:mon, "08:00", "12:00")
-schedule.clear_hours(:mon)
-schedule.save!
+schedule.intervals.create!(
+  weekday: "mon",
+  starts_at: "09:00",
+  ends_at: "17:00"
+)
 ```
-
-Weekdays use the same three-letter keys as `biz`: `sun`, `mon`, `tue`, `wed`,
-`thu`, `fri`, and `sat`. Times are normalized to `HH:MM`, sorted by start time,
-and overlapping ranges are rejected.
-
-## Editing Holidays
-
-Holidays are persisted as ISO 8601 dates inside the schedule configuration.
-
-```ruby
-schedule.add_holiday("2026-12-25")
-schedule.add_holiday(Date.new(2026, 1, 1))
-
-schedule.holiday?("2026-12-25")
-# => true
-
-schedule.replace_holidays(["2026-01-01", "2026-12-25"])
-schedule.remove_holiday("2026-01-01")
-schedule.clear_holidays
-schedule.save!
-```
-
-Dates are normalized, sorted, and deduplicated before being stored.
 
 ## Editing Shifts
 
@@ -191,48 +119,54 @@ Shifts are date-specific business hours. In `biz`, they override the recurring
 weekly hours for that date.
 
 ```ruby
-schedule.shifts_for("2026-06-01")
-# => [["10:00", "14:00"], ["15:00", "18:00"]]
+shift = schedule.shift_days.create!(date: "2026-06-01")
 
-schedule.add_shift("2026-06-01", "10:00", "14:00")
-
-schedule.replace_shifts("2026-06-01", [
-  ["09:00", "12:00"],
-  ["13:00", "17:00"]
-])
-
-schedule.remove_shift("2026-06-01", "09:00", "12:00")
-schedule.clear_shifts("2026-06-01")
-schedule.clear_all_shifts
-schedule.save!
+shift.intervals.create!(
+  starts_at: "10:00",
+  ends_at: "14:00"
+)
 ```
-
-Dates are persisted as ISO 8601 strings. Times are normalized to `HH:MM`,
-sorted by start time, and overlapping ranges are rejected.
 
 ## Editing Breaks
 
 Breaks are date-specific inactive periods within business hours.
 
 ```ruby
-schedule.breaks_for("2026-06-01")
-# => [["12:00", "13:00"], ["15:00", "15:30"]]
+break_day = schedule.break_days.create!(date: "2026-06-01")
 
-schedule.add_break("2026-06-01", "12:00", "13:00")
-
-schedule.replace_breaks("2026-06-01", [
-  ["12:00", "13:00"],
-  ["15:00", "15:30"]
-])
-
-schedule.remove_break("2026-06-01", "12:00", "13:00")
-schedule.clear_breaks("2026-06-01")
-schedule.clear_all_breaks
-schedule.save!
+break_day.intervals.create!(
+  starts_at: "12:00",
+  ends_at: "13:00"
+)
 ```
 
-Dates are persisted as ISO 8601 strings. Times are normalized to `HH:MM`,
-sorted by start time, and overlapping ranges are rejected.
+## Editing Holidays
+
+Holidays are date-specific days without working hours.
+
+```ruby
+schedule.holiday_days.create!(date: "2026-12-25")
+schedule.holiday_days.create!(date: Date.new(2026, 1, 1))
+```
+
+## Validations
+
+Intervals validate owner, start time, end time, weekday ownership, ordering, and
+overlaps. Days validate schedule, type, date presence, and uniqueness per
+schedule/type.
+
+```ruby
+interval = schedule.intervals.build(
+  weekday: "mon",
+  starts_at: "09:00",
+  ends_at: "17:00"
+)
+
+interval.valid?
+```
+
+The stored configuration uses string keys, ISO 8601 dates, sorted time ranges,
+and `HH:MM` times.
 
 ## Database Support
 

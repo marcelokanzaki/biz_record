@@ -53,7 +53,7 @@ module BizRecord
       )
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [], schedule.reload.shifts_for("2026-06-01")
+      refute schedule.reload.shifts.key?("2026-06-01")
       assert_equal Date.new(2026, 6, 1), schedule.shift_days.first.date
       assert_empty schedule.shift_days.first.intervals
     end
@@ -84,8 +84,10 @@ module BizRecord
       )
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [], schedule.reload.shifts_for("2026-06-01")
-      assert_equal [["10:00", "14:00"]], schedule.shifts_for("2026-06-02")
+      schedule.reload
+
+      refute schedule.shifts.key?("2026-06-01")
+      assert_equal({ "10:00" => "14:00" }, schedule.shifts.fetch("2026-06-02"))
       assert_equal Date.new(2026, 6, 2), shift.reload.date
     end
 
@@ -96,7 +98,7 @@ module BizRecord
       delete "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}"
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [], schedule.reload.shifts_for("2026-06-01")
+      refute schedule.reload.shifts.key?("2026-06-01")
       assert_empty schedule.shift_days
     end
 

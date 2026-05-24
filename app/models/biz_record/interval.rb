@@ -6,7 +6,7 @@ module BizRecord
   class Interval < ActiveRecord::Base
     self.table_name = "biz_record_intervals"
 
-    WEEKDAYS = BizRecord::Schedule::WeeklyHours::WEEKDAYS
+    WEEKDAYS = BizRecord::Configuration::WEEKDAYS
 
     belongs_to :owner, polymorphic: true
 
@@ -18,11 +18,12 @@ module BizRecord
     validates :starts_at, :ends_at, presence: true
     validates :weekday, inclusion: { in: WEEKDAYS }, allow_nil: true
 
+    validate :weekday_matches_owner
     validate :ends_after_starts
     validate :does_not_overlap
 
-    after_save :sync_owner_schedule
-    after_destroy :sync_owner_schedule
+    after_save :touch_schedule
+    after_destroy :touch_schedule
 
     def starts_at_string
       format_time(starts_at)
@@ -59,12 +60,27 @@ module BizRecord
       minutes_for(starts_at) < minutes_for(other.ends_at) && minutes_for(ends_at) > minutes_for(other.starts_at)
     end
 
-    def sync_owner_schedule
+    def weekday_matches_owner
+      return if owner.blank?
+
       if owner.is_a?(BizRecord::Schedule)
-        owner.sync_hours_from_intervals!(weekday)
-      elsif owner.respond_to?(:sync_schedule_shifts!)
-        owner.sync_schedule_shifts!
+        errors.add(:weekday, "can't be blank") if weekday.blank?
+      elsif weekday.present?
+        errors.add(:weekday, "must be blank")
       end
+    end
+
+    def touch_schedule
+      schedule = owner_schedule
+
+      schedule&.touch unless schedule&.destroyed?
+    end
+
+    def owner_schedule
+      return owner if owner.is_a?(BizRecord::Schedule)
+      return owner.schedule if owner.respond_to?(:schedule)
+
+      nil
     end
 
     def format_time(value)

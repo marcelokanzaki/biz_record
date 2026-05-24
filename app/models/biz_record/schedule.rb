@@ -6,12 +6,6 @@ require "date"
 
 module BizRecord
   class Schedule < ActiveRecord::Base
-    include Schedule::Configuration
-    include Schedule::Breaks
-    include Schedule::Holidays
-    include Schedule::Shifts
-    include Schedule::WeeklyHours
-
     self.table_name = "biz_record_schedules"
 
     DEFAULT_KEY = "default"
@@ -50,9 +44,10 @@ module BizRecord
     has_many :intervals, as: :owner, class_name: "BizRecord::Interval", dependent: :delete_all
     has_many :days, class_name: "BizRecord::Day", dependent: :destroy, inverse_of: :schedule
     has_many :shift_days, -> { order(:date) }, class_name: "BizRecord::Days::Shift", inverse_of: :schedule
+    has_many :break_days, -> { order(:date) }, class_name: "BizRecord::Days::Break", inverse_of: :schedule
+    has_many :holiday_days, -> { order(:date) }, class_name: "BizRecord::Days::Holiday", inverse_of: :schedule
 
-    after_create :create_intervals_from_hours
-    after_create :create_days_from_shifts
+    after_touch :refresh_configuration_from_associations
 
     validate :time_zone_exists
     validate :configuration_builds_biz_schedule
@@ -83,23 +78,6 @@ module BizRecord
       configuration_data.fetch("holidays")
     end
 
-    def sync_hours_from_intervals!(weekday)
-      ranges = intervals
-        .where(weekday: weekday)
-        .order(:starts_at)
-        .map(&:formatted_times)
-
-      replace_hours(weekday, ranges)
-      save!
-    end
-
-    def sync_shifts_from_day!(day)
-      ranges = day.intervals.order(:starts_at).map(&:formatted_times)
-
-      replace_shifts(day.date, ranges)
-      save!
-    end
-
     private
 
     def apply_defaults
@@ -108,30 +86,65 @@ module BizRecord
       self.configuration = configuration_data
     end
 
+    def refresh_configuration_from_associations
+      update_column(:configuration, configuration_from_associations)
+    end
+
+    def configuration_from_associations
+      {
+        "hours" => weekly_hours_configuration,
+        "shifts" => date_hours_configuration(BizRecord::Days::Shift),
+        "breaks" => date_hours_configuration(BizRecord::Days::Break),
+        "holidays" => holidays_configuration
+      }
+    end
+
+    def weekly_hours_configuration
+      intervals_by_weekday = BizRecord::Interval
+        .where(owner_type: self.class.name, owner_id: id)
+        .where.not(weekday: nil)
+        .order(:starts_at)
+        .group_by(&:weekday)
+
+      BizRecord::Configuration::WEEKDAYS.each_with_object({}) do |weekday, configured_hours|
+        weekday_intervals = intervals_by_weekday.fetch(weekday, [])
+        next if weekday_intervals.empty?
+
+        configured_hours[weekday] = time_ranges_for(weekday_intervals)
+      end
+    end
+
+    def date_hours_configuration(day_class)
+      days = day_class
+        .where(schedule_id: id)
+        .order(:date)
+        .includes(:intervals)
+
+      days.each_with_object({}) do |day, configured_hours|
+        day_intervals = day.intervals.sort_by(&:starts_at)
+        next if day_intervals.empty?
+
+        configured_hours[day.date_string] = time_ranges_for(day_intervals)
+      end
+    end
+
+    def holidays_configuration
+      BizRecord::Days::Holiday
+        .where(schedule_id: id)
+        .order(:date)
+        .map(&:date_string)
+        .uniq
+        .sort
+    end
+
+    def time_ranges_for(intervals)
+      intervals.each_with_object({}) do |interval, time_ranges|
+        time_ranges[interval.starts_at_string] = interval.ends_at_string
+      end
+    end
+
     def configuration_data
       deep_stringify_keys(self.class.default_configuration).merge(deep_stringify_keys(self[:configuration] || {}))
-    end
-
-    def create_intervals_from_hours
-      hours.each do |weekday, ranges|
-        ranges.each do |starts_at, ends_at|
-          intervals.create!(
-            weekday: weekday,
-            starts_at: starts_at,
-            ends_at: ends_at
-          )
-        end
-      end
-    end
-
-    def create_days_from_shifts
-      shifts.map { |date, ranges| [date, ranges] }.each do |date, ranges|
-        shift = shift_days.create!(date: date)
-
-        ranges.each do |starts_at, ends_at|
-          shift.intervals.create!(starts_at: starts_at, ends_at: ends_at)
-        end
-      end
     end
 
     def biz_hours

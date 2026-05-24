@@ -13,7 +13,7 @@ module BizRecord
 
     def test_show_links_to_add_edit_and_remove_intervals
       schedule = create_schedule!
-      interval = schedule.intervals.mon.first
+      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
       get "/biz_record/schedules/#{schedule.id}"
 
@@ -52,13 +52,13 @@ module BizRecord
       )
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [["08:00", "17:00"]], schedule.reload.hours_for(:sat)
+      assert_equal({ "08:00" => "17:00" }, schedule.reload.hours.fetch("sat"))
       assert_equal [["08:00", "17:00"]], schedule.intervals.sat.map(&:formatted_times)
     end
 
     def test_edit_renders_existing_interval_form
       schedule = create_schedule!
-      interval = schedule.intervals.mon.first
+      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
       get "/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}/edit"
 
@@ -72,7 +72,7 @@ module BizRecord
 
     def test_update_edits_existing_interval
       schedule = create_schedule!
-      interval = schedule.intervals.mon.first
+      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
       patch(
         "/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}",
@@ -87,18 +87,18 @@ module BizRecord
       )
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [["08:00", "16:00"]], schedule.reload.hours_for(:mon)
+      assert_equal({ "08:00" => "16:00" }, schedule.reload.hours.fetch("mon"))
       assert_equal [["08:00", "16:00"]], schedule.intervals.mon.map(&:formatted_times)
     end
 
     def test_destroy_removes_existing_interval
       schedule = create_schedule!
-      interval = schedule.intervals.mon.first
+      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
       delete "/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}"
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [], schedule.reload.hours_for(:mon)
+      refute schedule.reload.hours.key?("mon")
       assert_empty schedule.intervals.mon
     end
 
@@ -133,7 +133,7 @@ module BizRecord
       )
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [["10:00", "14:00"]], schedule.reload.shifts_for("2026-06-01")
+      assert_equal({ "10:00" => "14:00" }, schedule.reload.shifts.fetch("2026-06-01"))
       assert_equal [["10:00", "14:00"]], shift.intervals.map(&:formatted_times)
     end
 
@@ -170,7 +170,7 @@ module BizRecord
       )
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [["09:00", "13:00"]], schedule.reload.shifts_for("2026-06-01")
+      assert_equal({ "09:00" => "13:00" }, schedule.reload.shifts.fetch("2026-06-01"))
       assert_equal [["09:00", "13:00"]], shift.reload.intervals.map(&:formatted_times)
     end
 
@@ -182,7 +182,7 @@ module BizRecord
       delete "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}"
 
       assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-      assert_equal [], schedule.reload.shifts_for("2026-06-01")
+      refute schedule.reload.shifts.key?("2026-06-01")
       assert_empty shift.reload.intervals
     end
   end
