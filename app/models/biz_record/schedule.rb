@@ -72,7 +72,6 @@ module BizRecord
 
     def apply_defaults
       self.key = DEFAULT_KEY if key.nil? || key.empty?
-      # self.time_zone = DEFAULT_TIME_ZONE if time_zone.nil? || time_zone.empty?
       self.configuration = configuration_data
     end
 
