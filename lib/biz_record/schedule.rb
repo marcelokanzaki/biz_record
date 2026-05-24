@@ -51,6 +51,10 @@ module BizRecord
     validates :configuration, presence: true
     validates :key, uniqueness: { scope: %i[schedulable_type schedulable_id] }
 
+    has_many :intervals, as: :owner, class_name: "BizRecord::Interval", dependent: :delete_all
+
+    after_create :create_intervals_from_hours
+
     validate :time_zone_exists
     validate :configuration_builds_biz_schedule
 
@@ -80,6 +84,16 @@ module BizRecord
       configuration_data.fetch("holidays")
     end
 
+    def sync_hours_from_intervals!(weekday)
+      ranges = intervals
+        .where(weekday: weekday)
+        .order(:starts_at)
+        .map(&:formatted_times)
+
+      replace_hours(weekday, ranges)
+      save!
+    end
+
     private
 
     def apply_defaults
@@ -90,6 +104,18 @@ module BizRecord
 
     def configuration_data
       deep_stringify_keys(self.class.default_configuration).merge(deep_stringify_keys(self[:configuration] || {}))
+    end
+
+    def create_intervals_from_hours
+      hours.each do |weekday, ranges|
+        ranges.each do |starts_at, ends_at|
+          intervals.create!(
+            weekday: weekday,
+            starts_at: starts_at,
+            ends_at: ends_at
+          )
+        end
+      end
     end
 
     def biz_hours

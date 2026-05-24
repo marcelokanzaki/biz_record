@@ -1,14 +1,14 @@
 <h1>Add <%= @weekday %> hours</h1>
 
-<% if @schedule.errors.any? %>
+<% if @interval.errors.any? %>
   <ul>
-    <% @schedule.errors.full_messages.each do |message| %>
+    <% @interval.errors.full_messages.each do |message| %>
       <li><%= message %></li>
     <% end %>
   </ul>
 <% end %>
 
-<%= form_with scope: :hour, url: schedule_weekday_hours_path(@schedule, @weekday), method: :post do |form| %>
+<%= form_with model: @interval, url: schedule_weekday_intervals_path(@schedule, @weekday), method: :post do |form| %>
   <div>
     <%= form.label :starts_at, "Starts at" %>
     <%= form.time_select :starts_at, { minute_step: 5, ignore_date: true, include_blank: true } %>

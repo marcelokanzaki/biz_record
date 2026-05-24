@@ -5,7 +5,7 @@ BizRecord::Engine.routes.draw do
 
   scope "schedules/:schedule_id", as: :schedule do
     scope path: ":weekday", as: :weekday do
-      resources :hours, only: %i[new create edit update destroy], param: :starts_at
+      resources :intervals, only: %i[new create edit update destroy]
     end
   end
 end

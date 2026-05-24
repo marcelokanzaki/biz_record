@@ -17,18 +17,18 @@
     </div>
 
     <ul>
-      <% if @schedule.hours_for(weekday).any? %>
-        <% @schedule.hours_for(weekday).each do |starts_at, ends_at| %>
+      <% if @schedule.intervals.public_send(weekday).any? %>
+        <% @schedule.intervals.public_send(weekday).order(:starts_at).each do |interval| %>
           <li>
-            <%= starts_at %> ~ <%= ends_at %>
-            (<%= link_to "Edit", edit_schedule_weekday_hour_path(@schedule, weekday, starts_at) %>)
-            (<%= link_to "Remove", schedule_weekday_hour_path(@schedule, weekday, starts_at), data: { turbo_method: :delete } %>)
+            <%= interval.starts_at_string %> ~ <%= interval.ends_at_string %>
+            (<%= link_to "Edit", edit_schedule_weekday_interval_path(@schedule, weekday, interval) %>)
+            (<%= link_to "Remove", schedule_weekday_interval_path(@schedule, weekday, interval), data: { turbo_method: :delete } %>)
           </li>
         <% end %>
       <% end %>
 
       <li>
-        <%= link_to "Add hours", new_schedule_weekday_hour_path(@schedule, weekday) %>
+        <%= link_to "Add hours", new_schedule_weekday_interval_path(@schedule, weekday) %>
       </li>
     </ul>
   </div>

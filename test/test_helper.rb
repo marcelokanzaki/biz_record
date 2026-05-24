@@ -26,6 +26,19 @@ ActiveRecord::Schema.define do
             [:schedulable_type, :schedulable_id, :key],
             unique: true,
             name: "index_biz_record_schedules_on_schedulable_and_key"
+
+  create_table :biz_record_intervals, force: true do |t|
+    t.references :owner, polymorphic: true, null: false, index: false
+    t.string :weekday
+    t.time :starts_at, null: false
+    t.time :ends_at, null: false
+    t.timestamps
+  end
+
+  add_index :biz_record_intervals,
+            [:owner_type, :owner_id, :weekday, :starts_at],
+            unique: true,
+            name: "index_biz_record_intervals_on_owner_weekday_and_starts_at"
 end
 
 class Account < ActiveRecord::Base
@@ -38,6 +51,7 @@ module BizRecordTestHelpers
   def before_setup
     super
     BizRecord.reset_configuration!
+    BizRecord::Interval.delete_all
   end
 
   def account

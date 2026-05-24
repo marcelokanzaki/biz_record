@@ -8,6 +8,7 @@ require_relative "biz_record/support/date_values"
 require_relative "biz_record/support/time_ranges"
 require_relative "biz_record/configuration"
 require_relative "biz_record/schedule"
+require_relative "biz_record/interval"
 require_relative "biz_record/schedulable"
 
 module BizRecord

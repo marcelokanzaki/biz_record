@@ -23,6 +23,11 @@ module BizRecord
           assert_includes migration, "unique: true"
           assert_includes migration, ":jsonb"
           assert_includes migration, ":json"
+          assert_includes migration, "create_table :biz_record_intervals"
+          assert_includes migration, "t.references :owner, polymorphic: true, null: false, index: false"
+          assert_includes migration, "t.time :starts_at, null: false"
+          assert_includes migration, "t.time :ends_at, null: false"
+          assert_includes migration, "index_biz_record_intervals_on_owner_weekday_and_starts_at"
         end
       end
     end
