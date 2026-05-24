@@ -38,8 +38,8 @@ end
 ```
 
 Weekdays use the same three-letter keys as `biz`: `sun`, `mon`, `tue`, `wed`,
-`thu`, `fri`, and `sat`. Times are normalized to `HH:MM`, sorted by start time,
-and overlapping ranges are rejected.
+`thu`, `fri`, and `sat`. `biz_record` passes configured default hours through to
+`biz`; it does not normalize or validate this initializer value.
 
 ## Models
 
@@ -165,8 +165,9 @@ interval = schedule.intervals.build(
 interval.valid?
 ```
 
-The stored configuration uses string keys, ISO 8601 dates, sorted time ranges,
-and `HH:MM` times.
+Configuration rebuilt from the editable associations uses string keys, ISO 8601
+dates, sorted time ranges, and `HH:MM` times. Explicit configuration values are
+left for `biz` to validate when a `Biz::Schedule` is built.
 
 ## Database Support
 

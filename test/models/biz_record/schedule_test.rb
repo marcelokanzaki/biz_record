@@ -29,9 +29,7 @@ module BizRecord
 
       assert_equal(
         {
-          "sun" => {
-            "10:00" => "14:00"
-          }
+          "sun" => [["10:00", "14:00"]]
         },
         schedule.hours
       )
@@ -95,11 +93,13 @@ module BizRecord
       assert schedule.valid?
     end
 
-    test "requires configuration that biz can use" do
-      schedule = Schedule.new(configuration: { hours: {} })
+    test "lets biz validate schedule configuration" do
+      schedule = build_schedule(configuration: { hours: {} })
 
-      refute schedule.valid?
-      assert schedule.errors[:configuration].any?
+      assert schedule.valid?
+      assert_raises(Biz::Error::Configuration) do
+        schedule.to_biz_schedule
+      end
     end
   end
 end

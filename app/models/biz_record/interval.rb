@@ -6,7 +6,7 @@ module BizRecord
   class Interval < ActiveRecord::Base
     self.table_name = "biz_record_intervals"
 
-    WEEKDAYS = BizRecord::Configuration::WEEKDAYS
+    WEEKDAYS = BizRecord::WEEKDAYS
 
     belongs_to :owner, polymorphic: true
 

@@ -2,7 +2,6 @@
 
 require "rails"
 require "action_dispatch"
-require_relative "../../app/models/biz_record"
 
 module BizRecord
   class Engine < Rails::Engine
