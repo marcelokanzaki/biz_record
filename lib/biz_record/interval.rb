@@ -19,8 +19,8 @@ module BizRecord
     validate :ends_after_starts
     validate :does_not_overlap
 
-    after_save :sync_owner_hours
-    after_destroy :sync_owner_hours
+    after_save :sync_owner_schedule
+    after_destroy :sync_owner_schedule
 
     def starts_at_string
       format_time(starts_at)
@@ -57,10 +57,12 @@ module BizRecord
       minutes_for(starts_at) < minutes_for(other.ends_at) && minutes_for(ends_at) > minutes_for(other.starts_at)
     end
 
-    def sync_owner_hours
-      return unless owner.is_a?(BizRecord::Schedule)
-
-      owner.sync_hours_from_intervals!(weekday)
+    def sync_owner_schedule
+      if owner.is_a?(BizRecord::Schedule)
+        owner.sync_hours_from_intervals!(weekday)
+      elsif owner.respond_to?(:sync_schedule_shifts!)
+        owner.sync_schedule_shifts!
+      end
     end
 
     def format_time(value)

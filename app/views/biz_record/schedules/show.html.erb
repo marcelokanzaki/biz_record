@@ -33,3 +33,32 @@
     </ul>
   </div>
 <% end %>
+
+<h2>Shifts</h2>
+
+<ul>
+  <% @schedule.shift_days.each do |shift| %>
+    <li>
+      <%= shift.date_string %>
+      <ul>
+        <% shift.intervals.order(:starts_at).each do |interval| %>
+          <li>
+            <%= interval.starts_at_string %> ~ <%= interval.ends_at_string %>
+            (<%= link_to "Edit", edit_schedule_shift_interval_path(@schedule, shift, interval) %>)
+            (<%= link_to "Remove", schedule_shift_interval_path(@schedule, shift, interval), data: { turbo_method: :delete } %>)
+          </li>
+        <% end %>
+
+        <li>
+          <%= link_to "Add hours", new_schedule_shift_interval_path(@schedule, shift) %>
+        </li>
+      </ul>
+      (<%= link_to "Edit", edit_schedule_shift_path(@schedule, shift) %>)
+      (<%= link_to "Remove", schedule_shift_path(@schedule, shift), data: { turbo_method: :delete } %>)
+    </li>
+  <% end %>
+
+  <li>
+    <%= link_to "Add shift", new_schedule_shift_path(@schedule) %>
+  </li>
+</ul>

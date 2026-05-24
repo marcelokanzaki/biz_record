@@ -52,8 +52,11 @@ module BizRecord
     validates :key, uniqueness: { scope: %i[schedulable_type schedulable_id] }
 
     has_many :intervals, as: :owner, class_name: "BizRecord::Interval", dependent: :delete_all
+    has_many :days, class_name: "BizRecord::Day", dependent: :destroy, inverse_of: :schedule
+    has_many :shift_days, -> { order(:date) }, class_name: "BizRecord::Day::Shift", inverse_of: :schedule
 
     after_create :create_intervals_from_hours
+    after_create :create_days_from_shifts
 
     validate :time_zone_exists
     validate :configuration_builds_biz_schedule
@@ -94,6 +97,13 @@ module BizRecord
       save!
     end
 
+    def sync_shifts_from_day!(day)
+      ranges = day.intervals.order(:starts_at).map(&:formatted_times)
+
+      replace_shifts(day.date, ranges)
+      save!
+    end
+
     private
 
     def apply_defaults
@@ -114,6 +124,16 @@ module BizRecord
             starts_at: starts_at,
             ends_at: ends_at
           )
+        end
+      end
+    end
+
+    def create_days_from_shifts
+      shifts.map { |date, ranges| [date, ranges] }.each do |date, ranges|
+        shift = shift_days.create!(date: date)
+
+        ranges.each do |starts_at, ends_at|
+          shift.intervals.create!(starts_at: starts_at, ends_at: ends_at)
         end
       end
     end

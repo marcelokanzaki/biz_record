@@ -1,4 +1,4 @@
-<h1>Edit <%= @weekday %> hours</h1>
+<h1><%= interval_page_title %></h1>
 
 <% if @interval.errors.any? %>
   <ul>
@@ -8,7 +8,7 @@
   </ul>
 <% end %>
 
-<%= form_with model: @interval, url: schedule_weekday_interval_path(@schedule, @weekday, @interval), method: :patch do |form| %>
+<%= form_with model: @interval, url: interval_form_url, method: interval_form_method do |form| %>
   <div>
     <%= form.label :starts_at, "Starts at" %>
     <%= form.time_select :starts_at, { minute_step: 5, ignore_date: true } %>
@@ -19,7 +19,7 @@
     <%= form.time_select :ends_at, { minute_step: 5, ignore_date: true } %>
   </div>
 
-  <%= submit_tag "Save hours" %>
+  <%= submit_tag interval_submit_label %>
 <% end %>
 
 <p><%= link_to "Back to schedule", schedule_path(@schedule) %></p>
