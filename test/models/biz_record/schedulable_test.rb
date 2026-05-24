@@ -3,17 +3,17 @@
 require "test_helper"
 
 module BizRecord
-  class SchedulableTest < Minitest::Test
-    def setup
+  class SchedulableTest < ActiveSupport::TestCase
+    setup do
       Schedule.delete_all
       Account.delete_all
     end
 
-    def test_exposes_the_has_biz_schedule_macro_to_active_record_models
+    test "exposes the has biz schedule macro to active record models" do
       assert_respond_to Account, :has_biz_schedule
     end
 
-    def test_defines_a_default_schedule_association
+    test "defines a default schedule association" do
       assert_nil account.biz_schedule
 
       schedule = account.create_biz_schedule!
@@ -23,7 +23,7 @@ module BizRecord
       assert_equal schedule, account.reload.biz_schedule
     end
 
-    def test_defines_named_schedule_associations
+    test "defines named schedule associations" do
       support_schedule = account.create_support_schedule!
       dev_schedule = account.create_dev_schedule!
 
@@ -33,14 +33,14 @@ module BizRecord
       assert_equal dev_schedule, account.dev_schedule
     end
 
-    def test_builds_named_schedules_with_their_configured_key
+    test "builds named schedules with their configured key" do
       schedule = account.build_support_schedule
 
       assert_equal "support", schedule.key
       assert_equal account, schedule.schedulable
     end
 
-    def test_keeps_named_associations_separate
+    test "keeps named associations separate" do
       default_schedule = account.create_biz_schedule!
       support_schedule = account.create_support_schedule!
 

@@ -3,13 +3,13 @@
 require "test_helper"
 
 module BizRecord
-  class ScheduleTest < Minitest::Test
-    def setup
+  class ScheduleTest < ActiveSupport::TestCase
+    setup do
       Schedule.delete_all
       Account.delete_all
     end
 
-    def test_defaults_to_a_valid_biz_schedule
+    test "defaults to a valid biz schedule" do
       schedule = create_schedule!
 
       assert_equal "default", schedule.key
@@ -18,7 +18,7 @@ module BizRecord
       assert schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 10))
     end
 
-    def test_uses_configured_default_hours
+    test "uses configured default hours" do
       BizRecord.configure do |config|
         config.default_hours = {
           sun: [["10:00", "14:00"]]
@@ -39,14 +39,14 @@ module BizRecord
       refute schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 11))
     end
 
-    def test_can_belong_to_a_schedulable
+    test "can belong to a schedulable" do
       schedule = Schedule.create!(schedulable: account, key: "support")
 
       assert_equal account, schedule.schedulable
       assert_equal schedule, account.support_schedule
     end
 
-    def test_converts_configuration_to_biz_schedule
+    test "converts configuration to biz schedule" do
       schedule = create_schedule!(
         key: "support",
         time_zone: "America/Sao_Paulo",
@@ -65,21 +65,21 @@ module BizRecord
       assert biz_schedule.on_holiday?(Time.utc(2026, 5, 25, 13))
     end
 
-    def test_requires_valid_time_zone
+    test "requires valid time zone" do
       schedule = Schedule.new(time_zone: "Mars/Base")
 
       refute schedule.valid?
       assert_includes schedule.errors[:time_zone], "is not a valid IANA time zone"
     end
 
-    def test_requires_a_schedulable
+    test "requires a schedulable" do
       schedule = Schedule.new
 
       refute schedule.valid?
       assert schedule.errors[:schedulable].any?
     end
 
-    def test_requires_key_to_be_unique_within_schedulable
+    test "requires key to be unique within schedulable" do
       create_schedule!(key: "support")
       duplicate = build_schedule(key: "support")
 
@@ -87,7 +87,7 @@ module BizRecord
       assert duplicate.errors[:key].any?
     end
 
-    def test_allows_same_key_for_different_schedulables
+    test "allows same key for different schedulables" do
       create_schedule!(key: "support")
       other_account = Account.create!(name: "Other")
       schedule = Schedule.new(schedulable: other_account, key: "support")
@@ -95,7 +95,7 @@ module BizRecord
       assert schedule.valid?
     end
 
-    def test_requires_configuration_that_biz_can_use
+    test "requires configuration that biz can use" do
       schedule = Schedule.new(configuration: { hours: {} })
 
       refute schedule.valid?

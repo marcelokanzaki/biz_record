@@ -24,6 +24,8 @@ Gem::Specification.new do |spec|
       "README.md",
       "app/**/*",
       "config/routes.rb",
+      "db/**/*",
+      "Rakefile",
       "lib/**/*"
     ]
   end
@@ -31,8 +33,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "biz", "~> 1.8"
-  spec.add_dependency "activerecord", ">= 7.1", "< 9.0"
-  spec.add_dependency "railties", ">= 7.1", "< 9.0"
+  spec.add_dependency "rails", ">= 7.1", "< 9.0"
 
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "rake", "~> 13.0"

@@ -1,89 +1,21 @@
-# frozen_string_literal: true
+ENV["RAILS_ENV"] = "test"
 
-$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-ENV["RAILS_ENV"] ||= "test"
-
-require "minitest/autorun"
-require "rails"
-require "action_controller/railtie"
-require "action_view/railtie"
-require "active_record"
-require "biz_record"
-
-module BizRecordControllerTestApp
-  class Application < Rails::Application
-    config.root = File.expand_path("../tmp/controller_app", __dir__)
-    config.eager_load = false
-    config.logger = ActiveSupport::Logger.new(File::NULL)
-    config.secret_key_base = "biz-record-test"
-    config.hosts.clear
-  end
-end
-
-BizRecordControllerTestApp::Application.initialize!
-BizRecordControllerTestApp::Application.routes.draw do
-  mount BizRecord::Engine, at: "/biz_record"
-end
-
-ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
-
-ActiveRecord::Schema.define do
-  create_table :accounts, force: true do |t|
-    t.string :name
-    t.timestamps
-  end
-
-  create_table :biz_record_schedules, force: true do |t|
-    t.references :schedulable, polymorphic: true, null: false, index: false
-    t.string :key, null: false, default: "default"
-    t.string :time_zone, null: false, default: "Etc/UTC"
-    t.json :configuration, null: false
-    t.timestamps
-  end
-
-  add_index :biz_record_schedules,
-            [:schedulable_type, :schedulable_id, :key],
-            unique: true,
-            name: "index_biz_record_schedules_on_schedulable_and_key"
-
-  create_table :biz_record_days, force: true do |t|
-    t.references :schedule, null: false, index: false
-    t.string :type, null: false
-    t.date :date, null: false
-    t.timestamps
-  end
-
-  add_index :biz_record_days,
-            [:schedule_id, :type, :date],
-            unique: true,
-            name: "index_biz_record_days_on_schedule_type_and_date"
-
-  create_table :biz_record_intervals, force: true do |t|
-    t.references :owner, polymorphic: true, null: false, index: false
-    t.string :weekday
-    t.time :starts_at, null: false
-    t.time :ends_at, null: false
-    t.timestamps
-  end
-
-  add_index :biz_record_intervals,
-            [:owner_type, :owner_id, :weekday, :starts_at],
-            unique: true,
-            name: "index_biz_record_intervals_on_owner_weekday_and_starts_at"
-end
-
-class Account < ActiveRecord::Base
-  has_biz_schedule
-  has_biz_schedule :support
-  has_biz_schedule :dev
-end
+require_relative "dummy/config/environment"
+ActiveRecord::Migrator.migrations_paths = [File.expand_path("dummy/db/migrate", __dir__)]
+ActiveRecord::Migrator.migrations_paths << File.expand_path("../db/migrate", __dir__)
+require "rails/test_help"
 
 module BizRecordTestHelpers
-  def before_setup
-    super
-    BizRecord.reset_configuration!
-    BizRecord::Interval.delete_all
-    BizRecord::Day.delete_all
+  extend ActiveSupport::Concern
+
+  included do
+    setup do
+      BizRecord::Interval.delete_all
+      BizRecord::Day.delete_all
+      BizRecord::Schedule.delete_all
+      Account.delete_all
+      BizRecord.reset_configuration!
+    end
   end
 
   def account
@@ -99,4 +31,11 @@ module BizRecordTestHelpers
   end
 end
 
-Minitest::Test.include BizRecordTestHelpers
+ActiveSupport::TestCase.include BizRecordTestHelpers
+
+if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
+  ActiveSupport::TestCase.fixture_paths = [File.expand_path("fixtures", __dir__)]
+  ActionDispatch::IntegrationTest.fixture_paths = ActiveSupport::TestCase.fixture_paths
+  ActiveSupport::TestCase.file_fixture_path = File.expand_path("fixtures/files", __dir__)
+  ActiveSupport::TestCase.fixtures :all
+end

@@ -3,13 +3,13 @@
 require "test_helper"
 
 module BizRecord
-  class DayShiftTest < Minitest::Test
-    def setup
+  class DayShiftTest < ActiveSupport::TestCase
+    setup do
       Schedule.delete_all
       Account.delete_all
     end
 
-    def test_creating_shift_does_not_create_schedule_shifts_without_intervals
+    test "creating shift does not create schedule shifts without intervals" do
       schedule = create_schedule!
 
       schedule.shift_days.create!(date: "2026-06-01")
@@ -17,7 +17,7 @@ module BizRecord
       refute schedule.reload.shifts.key?("2026-06-01")
     end
 
-    def test_creating_shift_interval_touches_schedule_configuration
+    test "creating shift interval touches schedule configuration" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
 
@@ -26,7 +26,7 @@ module BizRecord
       assert_equal({ "10:00" => "14:00" }, schedule.reload.shifts.fetch("2026-06-01"))
     end
 
-    def test_updating_shift_interval_touches_schedule_configuration
+    test "updating shift interval touches schedule configuration" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
       interval = shift.intervals.first
@@ -36,7 +36,7 @@ module BizRecord
       assert_equal({ "09:00" => "13:00" }, schedule.reload.shifts.fetch("2026-06-01"))
     end
 
-    def test_updating_shift_date_touches_schedule_configuration
+    test "updating shift date touches schedule configuration" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 
@@ -48,7 +48,7 @@ module BizRecord
       assert_equal({ "10:00" => "14:00" }, schedule.shifts.fetch("2026-06-02"))
     end
 
-    def test_destroying_shift_touches_schedule_configuration
+    test "destroying shift touches schedule configuration" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 
@@ -57,7 +57,7 @@ module BizRecord
       refute schedule.reload.shifts.key?("2026-06-01")
     end
 
-    def test_allows_shift_without_intervals
+    test "allows shift without intervals" do
       schedule = create_schedule!
       shift = schedule.shift_days.build(date: "2026-06-01")
 

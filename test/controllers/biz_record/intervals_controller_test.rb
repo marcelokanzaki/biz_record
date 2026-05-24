@@ -4,14 +4,12 @@ require "test_helper"
 
 module BizRecord
   class IntervalsControllerTest < ActionDispatch::IntegrationTest
-    self.app = BizRecordControllerTestApp::Application
-
-    def setup
+    setup do
       Schedule.delete_all
       Account.delete_all
     end
 
-    def test_show_links_to_add_edit_and_remove_intervals
+    test "show links to add edit and remove intervals" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
@@ -23,7 +21,7 @@ module BizRecord
       assert_select "a[href='/biz_record/schedules/#{schedule.id}/mon/intervals/new']", "Add hours"
     end
 
-    def test_new_renders_interval_form
+    test "new renders interval form" do
       schedule = create_schedule!
 
       get "/biz_record/schedules/#{schedule.id}/mon/intervals/new"
@@ -36,7 +34,7 @@ module BizRecord
       assert_select "select[name='interval[ends_at(5i)]']"
     end
 
-    def test_create_adds_interval_to_weekday
+    test "create adds interval to weekday" do
       schedule = create_schedule!
 
       post(
@@ -56,7 +54,7 @@ module BizRecord
       assert_equal [["08:00", "17:00"]], schedule.intervals.sat.map(&:formatted_times)
     end
 
-    def test_edit_renders_existing_interval_form
+    test "edit renders existing interval form" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
@@ -70,7 +68,7 @@ module BizRecord
       assert_select "select[name='interval[ends_at(5i)]'] option[selected][value='00']"
     end
 
-    def test_update_edits_existing_interval
+    test "update edits existing interval" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
@@ -91,7 +89,7 @@ module BizRecord
       assert_equal [["08:00", "16:00"]], schedule.intervals.mon.map(&:formatted_times)
     end
 
-    def test_destroy_removes_existing_interval
+    test "destroy removes existing interval" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
@@ -102,7 +100,7 @@ module BizRecord
       assert_empty schedule.intervals.mon
     end
 
-    def test_new_renders_shift_interval_form
+    test "new renders shift interval form" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
 
@@ -116,7 +114,7 @@ module BizRecord
       assert_select "select[name='interval[ends_at(5i)]']"
     end
 
-    def test_create_adds_interval_to_shift
+    test "create adds interval to shift" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
 
@@ -137,7 +135,7 @@ module BizRecord
       assert_equal [["10:00", "14:00"]], shift.intervals.map(&:formatted_times)
     end
 
-    def test_edit_renders_shift_interval_form
+    test "edit renders shift interval form" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
       interval = shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")
@@ -152,7 +150,7 @@ module BizRecord
       assert_select "select[name='interval[ends_at(5i)]'] option[selected][value='00']"
     end
 
-    def test_update_edits_shift_interval
+    test "update edits shift interval" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
       interval = shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")
@@ -174,7 +172,7 @@ module BizRecord
       assert_equal [["09:00", "13:00"]], shift.reload.intervals.map(&:formatted_times)
     end
 
-    def test_destroy_removes_shift_interval
+    test "destroy removes shift interval" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
       interval = shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")

@@ -4,14 +4,12 @@ require "test_helper"
 
 module BizRecord
   class ShiftsControllerTest < ActionDispatch::IntegrationTest
-    self.app = BizRecordControllerTestApp::Application
-
-    def setup
+    setup do
       Schedule.delete_all
       Account.delete_all
     end
 
-    def test_show_links_to_add_edit_and_remove_shifts
+    test "show links to add edit and remove shifts" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 
@@ -29,7 +27,7 @@ module BizRecord
       assert_select "a[href='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}'][data-turbo-method='delete']", "Remove"
     end
 
-    def test_new_renders_shift_form_without_interval_fields
+    test "new renders shift form without interval fields" do
       schedule = create_schedule!
 
       get "/biz_record/schedules/#{schedule.id}/shifts/new"
@@ -40,7 +38,7 @@ module BizRecord
       assert_select "select[name^='shift[intervals_attributes]']", false
     end
 
-    def test_create_adds_shift_without_schedule_shift_hours
+    test "create adds shift without schedule shift hours" do
       schedule = create_schedule!
 
       post(
@@ -58,7 +56,7 @@ module BizRecord
       assert_empty schedule.shift_days.first.intervals
     end
 
-    def test_edit_renders_existing_shift_form_without_interval_fields
+    test "edit renders existing shift form without interval fields" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 
@@ -70,7 +68,7 @@ module BizRecord
       assert_select "select[name^='shift[intervals_attributes]']", false
     end
 
-    def test_update_edits_existing_shift_date
+    test "update edits existing shift date" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 
@@ -91,7 +89,7 @@ module BizRecord
       assert_equal Date.new(2026, 6, 2), shift.reload.date
     end
 
-    def test_destroy_removes_existing_shift
+    test "destroy removes existing shift" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 

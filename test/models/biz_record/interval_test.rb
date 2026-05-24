@@ -3,13 +3,13 @@
 require "test_helper"
 
 module BizRecord
-  class IntervalTest < Minitest::Test
-    def setup
+  class IntervalTest < ActiveSupport::TestCase
+    setup do
       Schedule.delete_all
       Account.delete_all
     end
 
-    def test_creating_interval_touches_schedule_configuration
+    test "creating interval touches schedule configuration" do
       schedule = create_schedule!
 
       schedule.intervals.create!(weekday: "sat", starts_at: "10:00", ends_at: "14:00")
@@ -17,7 +17,7 @@ module BizRecord
       assert_equal({ "10:00" => "14:00" }, schedule.reload.hours.fetch("sat"))
     end
 
-    def test_updating_interval_touches_schedule_configuration
+    test "updating interval touches schedule configuration" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
@@ -26,7 +26,7 @@ module BizRecord
       assert_equal({ "08:00" => "16:00" }, schedule.reload.hours.fetch("mon"))
     end
 
-    def test_destroying_interval_touches_schedule_configuration
+    test "destroying interval touches schedule configuration" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
@@ -35,7 +35,7 @@ module BizRecord
       refute schedule.reload.hours.key?("mon")
     end
 
-    def test_rejects_overlapping_intervals
+    test "rejects overlapping intervals" do
       schedule = create_schedule!
       schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
@@ -45,7 +45,7 @@ module BizRecord
       assert_includes interval.errors[:base], "hours cannot overlap"
     end
 
-    def test_schedule_intervals_require_weekday
+    test "schedule intervals require weekday" do
       schedule = create_schedule!
       interval = schedule.intervals.build(starts_at: "09:00", ends_at: "17:00")
 
@@ -53,7 +53,7 @@ module BizRecord
       assert_includes interval.errors[:weekday], "can't be blank"
     end
 
-    def test_day_intervals_reject_weekday
+    test "day intervals reject weekday" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
       interval = shift.intervals.build(weekday: "mon", starts_at: "09:00", ends_at: "17:00")

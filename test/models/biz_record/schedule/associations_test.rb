@@ -3,13 +3,13 @@
 require "test_helper"
 
 module BizRecord
-  class ScheduleAssociationsTest < Minitest::Test
-    def setup
+  class ScheduleAssociationsTest < ActiveSupport::TestCase
+    setup do
       Schedule.delete_all
       Account.delete_all
     end
 
-    def test_touch_rebuilds_configuration_from_associations
+    test "touch rebuilds configuration from associations" do
       schedule = create_schedule!
 
       schedule.intervals.create!(weekday: "mon", starts_at: "13:00", ends_at: "17:00")
@@ -47,7 +47,7 @@ module BizRecord
       )
     end
 
-    def test_to_biz_schedule_uses_rebuilt_configuration
+    test "to biz schedule uses rebuilt configuration" do
       schedule = create_schedule!
 
       schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
@@ -59,7 +59,7 @@ module BizRecord
       assert biz_schedule.on_holiday?(Time.utc(2026, 5, 25, 10))
     end
 
-    def test_old_configuration_mutation_api_is_not_exposed
+    test "old configuration mutation api is not exposed" do
       schedule = build_schedule
 
       refute_respond_to schedule, :replace_configuration

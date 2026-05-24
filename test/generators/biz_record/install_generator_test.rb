@@ -10,9 +10,11 @@ module BizRecord
       tests InstallGenerator
       destination File.expand_path("../../../tmp/generators", __dir__)
 
-      setup :prepare_destination
+      setup do
+        prepare_destination
+      end
 
-      def test_generates_schedule_migration
+      test "generates schedule migration" do
         run_generator
 
         assert_migration "db/migrate/create_biz_record_schedules.rb" do |migration|

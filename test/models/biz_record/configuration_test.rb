@@ -3,8 +3,8 @@
 require "test_helper"
 
 module BizRecord
-  class ConfigurationTest < Minitest::Test
-    def test_defaults_to_a_business_week
+  class ConfigurationTest < ActiveSupport::TestCase
+    test "defaults to a business week" do
       assert_equal(
         {
           "mon" => { "09:00" => "17:00" },
@@ -17,7 +17,7 @@ module BizRecord
       )
     end
 
-    def test_configures_default_hours
+    test "configures default hours" do
       BizRecord.configure do |config|
         config.default_hours = {
           sun: [["10:00", "14:00"]],
@@ -40,7 +40,7 @@ module BizRecord
       )
     end
 
-    def test_rejects_non_hash_default_hours
+    test "rejects non hash default hours" do
       error = assert_raises(ArgumentError) do
         BizRecord.configure { |config| config.default_hours = "invalid" }
       end
@@ -48,7 +48,7 @@ module BizRecord
       assert_equal "default_hours must be a hash", error.message
     end
 
-    def test_rejects_invalid_default_hours
+    test "rejects invalid default hours" do
       error = assert_raises(ArgumentError) do
         BizRecord.configure { |config| config.default_hours = { nope: [["09:00", "17:00"]] } }
       end
