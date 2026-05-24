@@ -63,13 +63,6 @@ module BizRecord
       assert biz_schedule.on_holiday?(Time.utc(2026, 5, 25, 13))
     end
 
-    test "requires valid time zone" do
-      schedule = Schedule.new(time_zone: "Mars/Base")
-
-      refute schedule.valid?
-      assert_includes schedule.errors[:time_zone], "is not a valid IANA time zone"
-    end
-
     test "requires a schedulable" do
       schedule = Schedule.new
 

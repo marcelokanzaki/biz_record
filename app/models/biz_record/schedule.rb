@@ -6,10 +6,11 @@ require "date"
 
 module BizRecord
   class Schedule < ActiveRecord::Base
+    include Timezone
+
     self.table_name = "biz_record_schedules"
 
     DEFAULT_KEY = "default"
-    DEFAULT_TIME_ZONE = "Etc/UTC"
 
     def self.default_hours
       BizRecord.default_hours
@@ -30,7 +31,6 @@ module BizRecord
 
     validates :key, presence: true
     validates :schedulable, presence: true
-    validates :time_zone, presence: true
     validates :configuration, presence: true
     validates :key, uniqueness: { scope: %i[schedulable_type schedulable_id] }
 
@@ -41,8 +41,6 @@ module BizRecord
     has_many :holiday_days, -> { order(:date) }, class_name: "BizRecord::Days::Holiday", inverse_of: :schedule
 
     after_touch :refresh_configuration_from_associations
-
-    validate :time_zone_exists
 
     def to_biz_schedule
       Biz::Schedule.new do |config|
@@ -74,7 +72,7 @@ module BizRecord
 
     def apply_defaults
       self.key = DEFAULT_KEY if key.nil? || key.empty?
-      self.time_zone = DEFAULT_TIME_ZONE if time_zone.nil? || time_zone.empty?
+      # self.time_zone = DEFAULT_TIME_ZONE if time_zone.nil? || time_zone.empty?
       self.configuration = configuration_data
     end
 
@@ -179,12 +177,6 @@ module BizRecord
       configuration.to_h.each_with_object({}) do |(key, value), converted|
         converted[String(key)] = value
       end
-    end
-
-    def time_zone_exists
-      TZInfo::Timezone.get(time_zone)
-    rescue TZInfo::InvalidTimezoneIdentifier
-      errors.add(:time_zone, "is not a valid IANA time zone")
     end
   end
 end
