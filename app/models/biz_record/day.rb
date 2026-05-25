@@ -7,7 +7,6 @@ module BizRecord
     self.table_name = "biz_record_days"
 
     belongs_to :schedule, class_name: "BizRecord::Schedule", inverse_of: :days
-    has_many :intervals, as: :owner, class_name: "BizRecord::Interval", dependent: :delete_all
 
     validates :schedule, presence: true
     validates :date, presence: true
