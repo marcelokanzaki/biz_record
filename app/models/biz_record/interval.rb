@@ -26,11 +26,11 @@ module BizRecord
     after_destroy -> { owner.touch }
 
     def starts_at_string
-      format_time(starts_at)
+      starts_at&.strftime("%H:%M")
     end
 
     def ends_at_string
-      format_time(ends_at)
+      ends_at&.strftime("%H:%M")
     end
 
     private
@@ -64,12 +64,6 @@ module BizRecord
       elsif weekday.present?
         errors.add(:weekday, "must be blank")
       end
-    end
-
-    def format_time(value)
-      return if value.nil?
-
-      value.respond_to?(:strftime) ? value.strftime("%H:%M") : String(value)
     end
 
     def minutes_for(value)
