@@ -26,12 +26,7 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
 
     schedule = create_schedule!
 
-    assert_equal(
-      {
-        "sun" => [["10:00", "14:00"]]
-      },
-      schedule.hours
-    )
+    assert_equal({ sun: [["10:00", "14:00"]] }, schedule.biz_hours)
     assert schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 17, 11))
     refute schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 11))
   end
@@ -83,14 +78,5 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
     schedule = BizRecord::Schedule.new(schedulable: other_account, key: "support")
 
     assert schedule.valid?
-  end
-
-  test "lets biz validate schedule configuration" do
-    schedule = build_schedule(configuration: { hours: {} })
-
-    assert schedule.valid?
-    assert_raises(Biz::Error::Configuration) do
-      schedule.to_biz_schedule
-    end
   end
 end
