@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class BizRecord::ScheduleAssociationsTest < ActiveSupport::TestCase
+class BizRecord::ConfigurationBundleTest < ActiveSupport::TestCase
   setup do
     BizRecord::Schedule.delete_all
     Account.delete_all
@@ -44,27 +44,5 @@ class BizRecord::ScheduleAssociationsTest < ActiveSupport::TestCase
       },
       schedule.reload.configuration
     )
-  end
-
-  test "to biz schedule uses rebuilt configuration" do
-    schedule = create_schedule!
-
-    schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
-    schedule.holiday_days.create!(date: "2026-05-25")
-
-    biz_schedule = schedule.reload.to_biz_schedule
-
-    assert biz_schedule.in_hours?(Time.utc(2026, 5, 18, 10))
-    assert biz_schedule.on_holiday?(Time.utc(2026, 5, 25, 10))
-  end
-
-  test "old configuration mutation api is not exposed" do
-    schedule = build_schedule
-
-    refute_respond_to schedule, :replace_configuration
-    refute_respond_to schedule, :add_hours
-    refute_respond_to schedule, :add_shift
-    refute_respond_to schedule, :add_break
-    refute_respond_to schedule, :add_holiday
   end
 end
