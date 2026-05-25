@@ -13,19 +13,12 @@ module BizRecord
     validates :type, presence: true
     validates :date, uniqueness: { scope: %i[schedule_id type] }
 
-    after_save :touch_schedule
-    after_destroy :touch_schedule
+    after_save    -> { schedule.touch }
+    after_destroy -> { schedule.touch }
+    after_touch   -> { schedule.touch }
 
     def date_string
       date&.iso8601
-    end
-
-    private
-
-    def touch_schedule
-      return if schedule.blank? || schedule.destroyed? || destroyed_by_association
-
-      schedule.touch
     end
   end
 end

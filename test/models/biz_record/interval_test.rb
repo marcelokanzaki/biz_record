@@ -9,30 +9,50 @@ module BizRecord
       Account.delete_all
     end
 
-    test "creating interval touches schedule configuration" do
+    test "create touches schedule" do
       schedule = create_schedule!
 
-      schedule.intervals.create!(weekday: "sat", starts_at: "10:00", ends_at: "14:00")
-
-      assert_equal({ "10:00" => "14:00" }, schedule.reload.hours.fetch("sat"))
+      assert_changes -> { schedule.updated_at } do
+        schedule.intervals.create!(weekday: "sat", starts_at: "10:00", ends_at: "14:00")
+      end
     end
 
-    test "updating interval touches schedule configuration" do
+    test "update touches schedule" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
-      interval.update!(starts_at: "08:00", ends_at: "16:00")
-
-      assert_equal({ "08:00" => "16:00" }, schedule.reload.hours.fetch("mon"))
+      assert_changes -> { schedule.updated_at } do
+        interval.update!(starts_at: "08:00", ends_at: "16:00")
+      end
     end
 
-    test "destroying interval touches schedule configuration" do
+    test "destroy touches schedule" do
       schedule = create_schedule!
       interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
-      interval.destroy!
+      assert_changes -> { schedule.updated_at } do
+        interval.destroy!
+      end
+    end
 
-      refute schedule.reload.hours.key?("mon")
+    test "create (shift interval) touches schedule" do
+      schedule = create_schedule!
+      shift = schedule.shift_days.create!(date: "2026-06-01")
+
+      assert_changes -> { schedule.updated_at } do
+        shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")
+      end
+    end
+
+    test "update (shift interval) touches schedule" do
+      schedule = create_schedule!
+      shift = schedule.shift_days.create!(date: "2026-06-01")
+
+      interval = shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")
+
+      assert_changes -> { schedule.updated_at } do
+        interval.update!(starts_at: "09:00", ends_at: "13:00")
+      end
     end
 
     test "rejects overlapping intervals" do

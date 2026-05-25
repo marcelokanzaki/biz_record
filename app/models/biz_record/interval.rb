@@ -22,8 +22,8 @@ module BizRecord
     validate :ends_after_starts
     validate :does_not_overlap
 
-    after_save :touch_schedule
-    after_destroy :touch_schedule
+    after_save    -> { owner.touch }
+    after_destroy -> { owner.touch }
 
     def starts_at_string
       format_time(starts_at)
@@ -68,19 +68,6 @@ module BizRecord
       elsif weekday.present?
         errors.add(:weekday, "must be blank")
       end
-    end
-
-    def touch_schedule
-      schedule = owner_schedule
-
-      schedule&.touch unless schedule&.destroyed?
-    end
-
-    def owner_schedule
-      return owner if owner.is_a?(BizRecord::Schedule)
-      return owner.schedule if owner.respond_to?(:schedule)
-
-      nil
     end
 
     def format_time(value)
