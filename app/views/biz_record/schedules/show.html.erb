@@ -39,7 +39,8 @@
 <ul>
   <% @schedule.shift_days.each do |shift| %>
     <li>
-      <%= shift.date_string %>
+      <%= shift.date %>
+
       <ul>
         <% shift.intervals.order(:starts_at).each do |interval| %>
           <li>

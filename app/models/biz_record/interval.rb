@@ -33,10 +33,6 @@ module BizRecord
       format_time(ends_at)
     end
 
-    def formatted_times
-      [starts_at_string, ends_at_string]
-    end
-
     private
 
     def ends_after_starts

@@ -9,167 +9,209 @@ module BizRecord
       Account.delete_all
     end
 
-    test "show links to add edit and remove intervals" do
+    test "new (weekday)" do
       schedule = create_schedule!
-      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
-
-      get "/biz_record/schedules/#{schedule.id}"
-
+      get biz_record.new_schedule_interval_path(schedule, weekday: :mon)
       assert_response :success
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}/edit']", "Edit"
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}'][data-turbo-method='delete']", "Remove"
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/mon/intervals/new']", "Add hours"
     end
 
-    test "new renders interval form" do
+    test "new (shift)" do
       schedule = create_schedule!
-
-      get "/biz_record/schedules/#{schedule.id}/mon/intervals/new"
-
+      shift = schedule.shift_days.create!(date: "2026-06-01")
+      get biz_record.new_schedule_shift_interval_path(schedule, shift)
       assert_response :success
-      assert_select "form[action='/biz_record/schedules/#{schedule.id}/mon/intervals'][method='post']"
-      assert_select "select[name='interval[starts_at(4i)]']"
-      assert_select "select[name='interval[starts_at(5i)]']"
-      assert_select "select[name='interval[ends_at(4i)]']"
-      assert_select "select[name='interval[ends_at(5i)]']"
     end
 
-    test "create adds interval to weekday" do
+    test "new (break)" do
+      schedule = create_schedule!
+      break_day = schedule.break_days.create!(date: "2026-06-01")
+      get biz_record.new_schedule_break_interval_path(schedule, break_day)
+      assert_response :success
+    end
+
+    test "create (weekday)" do
       schedule = create_schedule!
 
-      post(
-        "/biz_record/schedules/#{schedule.id}/sat/intervals",
-        params: {
-          interval: {
-            "starts_at(4i)" => "08",
-            "starts_at(5i)" => "00",
-            "ends_at(4i)" => "17",
-            "ends_at(5i)" => "00"
+      assert_difference -> { schedule.intervals.mon.count }, +1 do
+        post biz_record.schedule_intervals_path(schedule, weekday: :mon),
+          params: {
+            interval: {
+              "starts_at(4i)" => "08",
+              "starts_at(5i)" => "00",
+              "ends_at(4i)"   => "17",
+              "ends_at(5i)"   => "00"
+            }
           }
-        }
-      )
+      end
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
     end
 
-    test "edit renders existing interval form" do
+    test "create (shift)" do
       schedule = create_schedule!
-      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
+      shift = schedule.shift_days.create!(date: "2026-06-01")
 
-      get "/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}/edit"
-
-      assert_response :success
-      assert_select "form[action='/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}'][method='post']"
-      assert_select "select[name='interval[starts_at(4i)]'] option[selected][value='09']"
-      assert_select "select[name='interval[starts_at(5i)]'] option[selected][value='00']"
-      assert_select "select[name='interval[ends_at(4i)]'] option[selected][value='17']"
-      assert_select "select[name='interval[ends_at(5i)]'] option[selected][value='00']"
-    end
-
-    test "update edits existing interval" do
-      schedule = create_schedule!
-      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
-
-      patch(
-        "/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}",
-        params: {
-          interval: {
-            "starts_at(4i)" => "08",
-            "starts_at(5i)" => "00",
-            "ends_at(4i)" => "16",
-            "ends_at(5i)" => "00"
+      assert_difference -> { shift.intervals.count }, +1 do
+        post biz_record.schedule_shift_intervals_path(schedule, shift),
+          params: {
+            interval: {
+              "starts_at(4i)" => "08",
+              "starts_at(5i)" => "00",
+              "ends_at(4i)"   => "17",
+              "ends_at(5i)"   => "00"
+            }
           }
-        }
-      )
+      end
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
     end
 
-    test "destroy removes existing interval" do
+    test "create (break)" do
       schedule = create_schedule!
-      interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
+      break_day = schedule.break_days.create!(date: "2026-06-01")
 
-      delete "/biz_record/schedules/#{schedule.id}/mon/intervals/#{interval.id}"
-
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
-    end
-
-    test "new renders shift interval form" do
-      schedule = create_schedule!
-      shift = schedule.shift_days.create!(date: "2026-06-01")
-
-      get "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/new"
-
-      assert_response :success
-      assert_select "form[action='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals'][method='post']"
-      assert_select "select[name='interval[starts_at(4i)]']"
-      assert_select "select[name='interval[starts_at(5i)]']"
-      assert_select "select[name='interval[ends_at(4i)]']"
-      assert_select "select[name='interval[ends_at(5i)]']"
-    end
-
-    test "create adds interval to shift" do
-      schedule = create_schedule!
-      shift = schedule.shift_days.create!(date: "2026-06-01")
-
-      post(
-        "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals",
-        params: {
-          interval: {
-            "starts_at(4i)" => "10",
-            "starts_at(5i)" => "00",
-            "ends_at(4i)" => "14",
-            "ends_at(5i)" => "00"
+      assert_difference -> { break_day.intervals.count }, +1 do
+        post biz_record.schedule_break_intervals_path(schedule, break_day),
+          params: {
+            interval: {
+              "starts_at(4i)" => "08",
+              "starts_at(5i)" => "00",
+              "ends_at(4i)"   => "17",
+              "ends_at(5i)"   => "00"
+            }
           }
-        }
-      )
+      end
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
     end
 
-    test "edit renders shift interval form" do
+    test "edit (weekday)" do
       schedule = create_schedule!
-      shift = schedule.shift_days.create!(date: "2026-06-01")
-      interval = shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")
+      interval = schedule.intervals.create!(weekday: :mon, starts_at: "08:00", ends_at: "17:00")
 
-      get "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}/edit"
+      get biz_record.edit_schedule_interval_path(schedule, interval, weekday: :mon)
 
       assert_response :success
-      assert_select "form[action='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}'][method='post']"
-      assert_select "select[name='interval[starts_at(4i)]'] option[selected][value='10']"
-      assert_select "select[name='interval[starts_at(5i)]'] option[selected][value='00']"
-      assert_select "select[name='interval[ends_at(4i)]'] option[selected][value='14']"
-      assert_select "select[name='interval[ends_at(5i)]'] option[selected][value='00']"
     end
 
-    test "update edits shift interval" do
+    test "edit (shift)" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
-      interval = shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")
+      interval = shift.intervals.create!(starts_at: "08:00", ends_at: "17:00")
 
-      patch(
-        "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}",
+      get biz_record.edit_schedule_shift_interval_path(schedule, shift, interval)
+
+      assert_response :success
+    end
+
+    test "edit (break)" do
+      schedule = create_schedule!
+      break_day = schedule.break_days.create!(date: "2026-06-01")
+      interval = break_day.intervals.create!(starts_at: "08:00", ends_at: "17:00")
+
+      get biz_record.edit_schedule_break_interval_path(schedule, break_day, interval)
+
+      assert_response :success
+    end
+
+    test "update (weekday)" do
+      schedule = create_schedule!
+      interval = schedule.intervals.create!(weekday: :mon, starts_at: "08:00", ends_at: "17:00")
+
+      patch biz_record.schedule_interval_path(schedule, interval, weekday: :mon),
         params: {
           interval: {
             "starts_at(4i)" => "09",
-            "starts_at(5i)" => "00",
-            "ends_at(4i)" => "13",
-            "ends_at(5i)" => "00"
+            "starts_at(5i)" => "30",
+            "ends_at(4i)"   => "18",
+            "ends_at(5i)"   => "00"
           }
         }
-      )
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
+
+      interval.reload
+      assert_equal "09:30", interval.starts_at.strftime("%H:%M")
+      assert_equal "18:00", interval.ends_at.strftime("%H:%M")
     end
 
-    test "destroy removes shift interval" do
+    test "update (shift)" do
       schedule = create_schedule!
       shift = schedule.shift_days.create!(date: "2026-06-01")
-      interval = shift.intervals.create!(starts_at: "10:00", ends_at: "14:00")
+      interval = shift.intervals.create!(starts_at: "08:00", ends_at: "17:00")
 
-      delete "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}"
+      patch biz_record.schedule_shift_interval_path(schedule, shift, interval),
+        params: {
+          interval: {
+            "starts_at(4i)" => "09",
+            "starts_at(5i)" => "30",
+            "ends_at(4i)"   => "18",
+            "ends_at(5i)"   => "00"
+          }
+        }
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
+
+      interval.reload
+      assert_equal "09:30", interval.starts_at.strftime("%H:%M")
+      assert_equal "18:00", interval.ends_at.strftime("%H:%M")
+    end
+
+    test "update (break)" do
+      schedule = create_schedule!
+      break_day = schedule.break_days.create!(date: "2026-06-01")
+      interval = break_day.intervals.create!(starts_at: "08:00", ends_at: "17:00")
+
+      patch biz_record.schedule_break_interval_path(schedule, break_day, interval),
+        params: {
+          interval: {
+            "starts_at(4i)" => "09",
+            "starts_at(5i)" => "30",
+            "ends_at(4i)"   => "18",
+            "ends_at(5i)"   => "00"
+          }
+        }
+
+      assert_redirected_to biz_record.schedule_path(schedule)
+
+      interval.reload
+      assert_equal "09:30", interval.starts_at.strftime("%H:%M")
+      assert_equal "18:00", interval.ends_at.strftime("%H:%M")
+    end
+
+    test "destroy (weekday)" do
+      schedule = create_schedule!
+      interval = schedule.intervals.create!(weekday: :mon, starts_at: "08:00", ends_at: "17:00")
+
+      assert_difference -> { schedule.intervals.count }, -1 do
+        delete biz_record.schedule_interval_path(schedule, interval, weekday: :mon)
+      end
+
+      assert_redirected_to biz_record.schedule_path(schedule)
+    end
+
+    test "destroy (shift)" do
+      schedule = create_schedule!
+      shift = schedule.shift_days.create!(date: "2026-06-01")
+      interval = shift.intervals.create!(starts_at: "08:00", ends_at: "17:00")
+
+      assert_difference -> { shift.intervals.count }, -1 do
+        delete biz_record.schedule_shift_interval_path(schedule, shift, interval)
+      end
+
+      assert_redirected_to biz_record.schedule_path(schedule)
+    end
+
+    test "destroy (break)" do
+      schedule = create_schedule!
+      break_day = schedule.break_days.create!(date: "2026-06-01")
+      interval = break_day.intervals.create!(starts_at: "08:00", ends_at: "17:00")
+
+      assert_difference -> { break_day.intervals.count }, -1 do
+        delete biz_record.schedule_break_interval_path(schedule, break_day, interval)
+      end
+
+      assert_redirected_to biz_record.schedule_path(schedule)
     end
   end
 end

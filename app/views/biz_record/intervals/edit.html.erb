@@ -1,25 +1,3 @@
-<h1><%= interval_page_title %></h1>
+<h1>Edit interval</h1>
 
-<% if @interval.errors.any? %>
-  <ul>
-    <% @interval.errors.full_messages.each do |message| %>
-      <li><%= message %></li>
-    <% end %>
-  </ul>
-<% end %>
-
-<%= form_with model: @interval, url: interval_form_url, method: interval_form_method do |form| %>
-  <div>
-    <%= form.label :starts_at, "Starts at" %>
-    <%= form.time_select :starts_at, { minute_step: 5, ignore_date: true } %>
-  </div>
-
-  <div>
-    <%= form.label :ends_at, "Ends at" %>
-    <%= form.time_select :ends_at, { minute_step: 5, ignore_date: true } %>
-  </div>
-
-  <%= submit_tag interval_submit_label %>
-<% end %>
-
-<p><%= link_to "Back to schedule", schedule_path(@schedule) %></p>
+<%= render "form" %>

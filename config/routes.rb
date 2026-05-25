@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
 BizRecord::Engine.routes.draw do
-  resources :schedules, only: %i[show]
+  resources :schedules, only: %i[show] do
+    interval_actions = %i[new create edit update destroy]
 
-  scope "schedules/:schedule_id", as: :schedule do
-    resources :shifts, only: %i[new create edit update destroy] do
-      resources :intervals, only: %i[new create edit update destroy]
+    with_options path: ":weekday/intervals", constraints: { weekday: Regexp.union(BizRecord::WEEKDAYS) } do
+      resources :intervals, only: interval_actions
     end
 
-    scope path: ":weekday", as: :weekday do
-      resources :intervals, only: %i[new create edit update destroy]
+    resources :shifts, only: %i[new create edit update destroy] do
+      resources :intervals, only: interval_actions
+    end
+
+    resources :breaks, only: %i[new create edit update destroy] do
+      resources :intervals, only: interval_actions
     end
   end
 end

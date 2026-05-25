@@ -38,12 +38,12 @@ module BizRecord::Schedule::ConfigurationBundle
       interval_records = day.intervals.sort_by(&:starts_at)
       next if interval_records.empty?
 
-      output_hash[day.date_string] = intervals_hash_from(interval_records)
+      output_hash[day.to_biz_schedule] = intervals_hash_from(interval_records)
     end
   end
 
   def holidays_bundle
-    holiday_days.all.map(&:date_string).uniq.sort
+    holiday_days.all.map(&:to_biz_schedule).uniq.sort
   end
 
   def intervals_hash_from(interval_records)

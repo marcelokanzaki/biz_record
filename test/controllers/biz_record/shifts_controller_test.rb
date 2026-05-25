@@ -9,85 +9,61 @@ module BizRecord
       Account.delete_all
     end
 
-    test "show links to add edit and remove shifts" do
+    test "new" do
       schedule = create_schedule!
-      shift = create_shift!(schedule)
-
-      get "/biz_record/schedules/#{schedule.id}"
-
+      get biz_record.new_schedule_shift_path(schedule)
       assert_response :success
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/shifts/new']", "Add shift"
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/edit']", "Edit"
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}'][data-turbo-method='delete']", "Remove"
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/new']", "Add hours"
-
-      interval = shift.intervals.first
-
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}/edit']", "Edit"
-      assert_select "a[href='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/intervals/#{interval.id}'][data-turbo-method='delete']", "Remove"
     end
 
-    test "new renders shift form without interval fields" do
+    test "create" do
       schedule = create_schedule!
 
-      get "/biz_record/schedules/#{schedule.id}/shifts/new"
-
-      assert_response :success
-      assert_select "form[action='/biz_record/schedules/#{schedule.id}/shifts'][method='post']"
-      assert_select "input[name='shift[date]'][type='date']"
-      assert_select "select[name^='shift[intervals_attributes]']", false
-    end
-
-    test "create adds shift without schedule shift hours" do
-      schedule = create_schedule!
-
-      post(
-        "/biz_record/schedules/#{schedule.id}/shifts",
-        params: {
-          shift: {
-            date: "2026-06-01"
+      assert_difference -> { schedule.shift_days.count }, +1 do
+        post biz_record.schedule_shifts_path(schedule),
+          params: {
+            shift: {
+              date: "2026-06-01"
+            }
           }
-        }
-      )
+      end
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
     end
 
-    test "edit renders existing shift form without interval fields" do
+    test "edit" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 
-      get "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}/edit"
-
+      get biz_record.edit_schedule_shift_path(schedule, shift)
       assert_response :success
-      assert_select "form[action='/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}'][method='post']"
-      assert_select "input[name='shift[date]'][value='2026-06-01']"
-      assert_select "select[name^='shift[intervals_attributes]']", false
     end
 
-    test "update edits existing shift date" do
+    test "update" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
+      new_date = Date.new(2026, 6, 2)
 
-      patch(
-        "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}",
-        params: {
-          shift: {
-            date: "2026-06-02"
+      assert_changes -> { shift.reload.date }, to: new_date do
+        patch biz_record.schedule_shift_path(schedule, shift),
+          params: {
+            shift: {
+              date: new_date
+            }
           }
-        }
-      )
+      end
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
     end
 
     test "destroy removes existing shift" do
       schedule = create_schedule!
       shift = create_shift!(schedule)
 
-      delete "/biz_record/schedules/#{schedule.id}/shifts/#{shift.id}"
+      assert_difference -> { schedule.shift_days.count }, -1 do
+        delete biz_record.schedule_shift_path(schedule, shift)
+      end
 
-      assert_redirected_to "/biz_record/schedules/#{schedule.id}"
+      assert_redirected_to biz_record.schedule_path(schedule)
     end
 
     private

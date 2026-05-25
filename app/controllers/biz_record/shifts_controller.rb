@@ -20,7 +20,6 @@ module BizRecord
     end
 
     def edit
-      @shift.intervals.build if @shift.intervals.empty?
     end
 
     def update

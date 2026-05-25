@@ -1,20 +1,3 @@
-<h1>Add shift</h1>
+<h1>Add a shift</h1>
 
-<% if @shift.errors.any? %>
-  <ul>
-    <% @shift.errors.full_messages.each do |message| %>
-      <li><%= message %></li>
-    <% end %>
-  </ul>
-<% end %>
-
-<%= form_with model: @shift, scope: :shift, url: schedule_shifts_path(@schedule), method: :post do |form| %>
-  <div>
-    <%= form.label :date, "Date" %>
-    <%= form.date_field :date %>
-  </div>
-
-  <%= submit_tag "Add shift" %>
-<% end %>
-
-<p><%= link_to "Back to schedule", schedule_path(@schedule) %></p>
+<%= render "form" %>

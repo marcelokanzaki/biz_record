@@ -1,0 +1,23 @@
+<% if @interval.errors.any? %>
+  <ul>
+    <% @interval.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= form_with model: @interval, url: interval_path_for(@schedule, @interval_owner, @interval, @weekday) do |form| %>
+  <div>
+    <%= form.label :starts_at, "Starts at" %>
+    <%= form.time_select :starts_at, { minute_step: 5, ignore_date: true } %>
+  </div>
+
+  <div>
+    <%= form.label :ends_at, "Ends at" %>
+    <%= form.time_select :ends_at, { minute_step: 5, ignore_date: true } %>
+  </div>
+
+  <%= form.submit %>
+<% end %>
+
+<p><%= link_to "Back to schedule", schedule_path(@schedule) %></p>
