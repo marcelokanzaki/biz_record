@@ -36,9 +36,9 @@ module BizRecord
 
     has_many :intervals, as: :owner, class_name: "BizRecord::Interval", dependent: :delete_all
     has_many :days, class_name: "BizRecord::Day", dependent: :destroy, inverse_of: :schedule
-    has_many :shift_days, -> { order(:date) }, class_name: "BizRecord::Days::Shift", inverse_of: :schedule
-    has_many :break_days, -> { order(:date) }, class_name: "BizRecord::Days::Break", inverse_of: :schedule
-    has_many :holiday_days, -> { order(:date) }, class_name: "BizRecord::Days::Holiday", inverse_of: :schedule
+    has_many :shift_days, -> { order(date: :asc) }, class_name: "BizRecord::Days::Shift", inverse_of: :schedule
+    has_many :break_days, -> { order(date: :asc) }, class_name: "BizRecord::Days::Break", inverse_of: :schedule
+    has_many :holiday_days, -> { order(date: :asc) }, class_name: "BizRecord::Days::Holiday", inverse_of: :schedule
 
     def hours
       configuration_data.fetch("hours")
