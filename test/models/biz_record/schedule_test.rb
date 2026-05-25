@@ -11,7 +11,6 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
   test "defaults to a valid biz schedule" do
     schedule = create_schedule!
 
-    assert_equal "default", schedule.key
     assert_equal "Etc/UTC", schedule.time_zone
     assert_instance_of Biz::Schedule, schedule.to_biz_schedule
     assert schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 10))
@@ -62,21 +61,5 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
 
     refute schedule.valid?
     assert schedule.errors[:schedulable].any?
-  end
-
-  test "requires key to be unique within schedulable" do
-    create_schedule!(key: "support")
-    duplicate = build_schedule(key: "support")
-
-    refute duplicate.valid?
-    assert duplicate.errors[:key].any?
-  end
-
-  test "allows same key for different schedulables" do
-    create_schedule!(key: "support")
-    other_account = Account.create!(name: "Other")
-    schedule = BizRecord::Schedule.new(schedulable: other_account, key: "support")
-
-    assert schedule.valid?
   end
 end

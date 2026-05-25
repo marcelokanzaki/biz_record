@@ -6,11 +6,9 @@ require "date"
 
 module BizRecord
   class Schedule < ActiveRecord::Base
-    include Timezone, ConfigurationBundle, BizSchedule
+    include Key, Timezone, ConfigurationBundle, BizSchedule
 
     self.table_name = "biz_record_schedules"
-
-    DEFAULT_KEY = "default"
 
     belongs_to :schedulable, polymorphic: true, optional: false
 
@@ -20,12 +18,9 @@ module BizRecord
     has_many :break_days, -> { order(date: :asc) }, class_name: "BizRecord::Days::Break", inverse_of: :schedule
     has_many :holiday_days, -> { order(date: :asc) }, class_name: "BizRecord::Days::Holiday", inverse_of: :schedule
 
-    validates :key, presence: true
     validates :schedulable, presence: true
     validates :configuration, presence: true
-    validates :key, uniqueness: { scope: %i[schedulable_type schedulable_id] }
 
-    before_validation :set_default_key
     before_validation :set_default_configuration
 
     def self.default_configuration
@@ -42,10 +37,6 @@ module BizRecord
     end
 
     private
-
-    def set_default_key
-      self.key = DEFAULT_KEY unless key.present?
-    end
 
     def set_default_configuration
       self.configuration = self.class.default_configuration unless configuration.present?

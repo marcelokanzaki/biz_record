@@ -17,7 +17,7 @@ class BizRecord::SchedulableTest < ActiveSupport::TestCase
 
     schedule = account.create_biz_schedule!
 
-    assert_equal BizRecord::Schedule::DEFAULT_KEY, schedule.key
+    assert_equal BizRecord::Schedule::Key::DEFAULT_KEY, schedule.key
     assert_equal account, schedule.schedulable
     assert_equal schedule, account.reload.biz_schedule
   end
