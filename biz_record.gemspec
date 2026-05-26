@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors = [ "Marcelo Kanzaki" ]
   spec.email = "marcelo@hey.com"
   spec.homepage = "https://github.com/marcelokanzaki/biz_record"
-  spec.summary = "Persistence layer for the biz gem."
-  spec.description = "Persistence layer for schedules used by the biz gem."
+  spec.summary = "Rails engine for using the biz gem with Active Record."
+  spec.description = "Provides Active Record persistence and optional Rails forms for biz schedules, including weekly hours, shifts, breaks, holidays, and time zones."
   spec.license = "MIT"
 
   spec.required_ruby_version = ">= 3.1"
