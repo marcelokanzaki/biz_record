@@ -18,45 +18,28 @@ module BizRecord
     validates :starts_at, :ends_at, presence: true
     validates :weekday, inclusion: { in: WEEKDAYS }, allow_nil: true
 
-    validate :weekday_matches_owner
+    validate :weekday_attribte_is_for_schedule_intervals
     validate :ends_after_starts
     validate :does_not_overlap
 
     after_save    -> { owner.touch }
     after_destroy -> { owner.touch }
 
-    def starts_at_string
+    def formatted_starts_at
       starts_at&.strftime("%H:%M")
     end
 
-    def ends_at_string
+    def formatted_ends_at
       ends_at&.strftime("%H:%M")
+    end
+
+    def overlaps?(other)
+      starts_at < other.ends_at && ends_at > other.starts_at
     end
 
     private
 
-    def ends_after_starts
-      return if starts_at.blank? || ends_at.blank?
-
-      errors.add(:ends_at, "must be after starts at") unless minutes_for(ends_at) > minutes_for(starts_at)
-    end
-
-    def does_not_overlap
-      return if owner.blank? || starts_at.blank? || ends_at.blank?
-
-      intervals = owner.intervals.where(weekday: weekday)
-      intervals = intervals.where.not(id: id) if persisted?
-
-      if intervals.any? { |interval| overlaps?(interval) }
-        errors.add(:base, "hours cannot overlap")
-      end
-    end
-
-    def overlaps?(other)
-      minutes_for(starts_at) < minutes_for(other.ends_at) && minutes_for(ends_at) > minutes_for(other.starts_at)
-    end
-
-    def weekday_matches_owner
+    def weekday_attribte_is_for_schedule_intervals
       return if owner.blank?
 
       if owner.is_a?(BizRecord::Schedule)
@@ -66,13 +49,20 @@ module BizRecord
       end
     end
 
-    def minutes_for(value)
-      if value.respond_to?(:hour)
-        (value.hour * 60) + value.min
-      else
-        hour, minute = String(value).split(":").map(&:to_i)
+    def ends_after_starts
+      if starts_at.present? && ends_at.present? && ends_at <= starts_at
+        errors.add(:ends_at, "must be after starts at")
+      end
+    end
 
-        (hour * 60) + minute
+    def does_not_overlap
+      return if owner.blank? || starts_at.blank? || ends_at.blank?
+
+      sibling_intervals = owner.intervals.where(weekday: weekday)
+      sibling_intervals = sibling_intervals.where.not(id: id) if persisted?
+
+      if sibling_intervals.any? { |interval| overlaps?(interval) }
+        errors.add(:base, "hours cannot overlap")
       end
     end
   end

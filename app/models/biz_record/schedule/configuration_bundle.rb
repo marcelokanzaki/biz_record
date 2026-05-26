@@ -48,7 +48,7 @@ module BizRecord::Schedule::ConfigurationBundle
 
   def intervals_hash_from(interval_records)
     interval_records.each_with_object({}) do |interval_record, output_hash|
-      output_hash[interval_record.starts_at_string] = interval_record.ends_at_string
+      output_hash[interval_record.formatted_starts_at] = interval_record.formatted_ends_at
     end
   end
 end

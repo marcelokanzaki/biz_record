@@ -20,7 +20,7 @@
       <% if @schedule.intervals.public_send(weekday).any? %>
         <% @schedule.intervals.public_send(weekday).order(:starts_at).each do |interval| %>
           <li>
-            <%= interval.starts_at_string %> ~ <%= interval.ends_at_string %>
+            <%= interval.formatted_starts_at %> ~ <%= interval.formatted_ends_at %>
             (<%= link_to "Edit", edit_schedule_weekday_interval_path(@schedule, weekday, interval) %>)
             (<%= link_to "Remove", schedule_weekday_interval_path(@schedule, weekday, interval), data: { turbo_method: :delete } %>)
           </li>
@@ -44,7 +44,7 @@
       <ul>
         <% shift.intervals.order(:starts_at).each do |interval| %>
           <li>
-            <%= interval.starts_at_string %> ~ <%= interval.ends_at_string %>
+            <%= interval.formatted_starts_at %> ~ <%= interval.formatted_ends_at %>
             (<%= link_to "Edit", edit_schedule_shift_interval_path(@schedule, shift, interval) %>)
             (<%= link_to "Remove", schedule_shift_interval_path(@schedule, shift, interval), data: { turbo_method: :delete } %>)
           </li>
