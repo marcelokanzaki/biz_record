@@ -3,8 +3,12 @@ require "biz"
 module BizRecord::Schedule::BizSchedule
   extend ActiveSupport::Concern
 
+  included do
+    after_touch :reset_biz_schedule
+  end
+
   def biz_schedule
-    Biz::Schedule.new do |config|
+    @biz_schedule ||= Biz::Schedule.new do |config|
       config.hours     = biz_hours
       config.shifts    = biz_shifts
       config.breaks    = biz_breaks
@@ -27,5 +31,16 @@ module BizRecord::Schedule::BizSchedule
 
   def biz_holidays
     configuration.fetch("holidays").map(&:to_date)
+  end
+
+  def reload_biz_schedule
+    reset_biz_schedule
+    biz_schedule
+  end
+
+  private
+
+  def reset_biz_schedule
+    remove_instance_variable(:@biz_schedule) if instance_variable_defined?(:@biz_schedule)
   end
 end

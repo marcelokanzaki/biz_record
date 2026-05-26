@@ -29,7 +29,12 @@ module BizRecord
     end
 
     def configuration=(new_configuration)
+      reset_biz_schedule
       self[:configuration] = self.class.default_configuration.deep_stringify_keys.deep_merge(new_configuration.deep_stringify_keys)
+    end
+
+    def reload(*args)
+      super.tap { reset_biz_schedule }
     end
 
     private

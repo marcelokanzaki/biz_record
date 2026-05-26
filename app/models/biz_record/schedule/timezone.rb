@@ -9,6 +9,11 @@ module BizRecord::Schedule::Timezone
     before_create :set_default_timezone
   end
 
+  def time_zone=(value)
+    reset_biz_schedule
+    super
+  end
+
   private
 
   def time_zone_exists
