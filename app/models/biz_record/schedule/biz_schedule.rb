@@ -22,7 +22,7 @@ module BizRecord::Schedule::BizSchedule
   end
 
   def biz_breaks
-    configuration.fetch("shifts").transform_keys(&:to_date)
+    configuration.fetch("breaks").transform_keys(&:to_date)
   end
 
   def biz_holidays
