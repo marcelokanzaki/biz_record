@@ -1,9 +1,3 @@
-# frozen_string_literal: true
-
-require "active_record"
-require "biz"
-require "date"
-
 module BizRecord
   class Schedule < ActiveRecord::Base
     include Key, Timezone, ConfigurationBundle, BizSchedule
@@ -25,9 +19,9 @@ module BizRecord
 
     def self.default_configuration
       {
-        "hours" => BizRecord.default_hours,
-        "shifts" => {},
-        "breaks" => {},
+        "hours"    => BizRecord.default_hours,
+        "shifts"   => {},
+        "breaks"   => {},
         "holidays" => []
       }
     end

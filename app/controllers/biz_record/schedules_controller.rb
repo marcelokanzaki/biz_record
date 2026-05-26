@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module BizRecord
   class SchedulesController < ApplicationController
     before_action :set_schedule

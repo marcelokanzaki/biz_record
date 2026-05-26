@@ -1,7 +1,3 @@
-# frozen_string_literal: true
-
-require "active_record"
-
 module BizRecord
   class Day < ActiveRecord::Base
     self.table_name = "biz_record_days"

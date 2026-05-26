@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 BizRecord::Engine.routes.draw do
   resources :schedules, only: %i[show] do
     interval_actions = %i[new create edit update destroy]

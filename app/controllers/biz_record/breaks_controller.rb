@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module BizRecord
   class BreaksController < ApplicationController
     before_action :set_schedule

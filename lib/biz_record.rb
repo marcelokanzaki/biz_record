@@ -1,7 +1,6 @@
-# frozen_string_literal: true
-
 require "active_support/lazy_load_hooks"
-require_relative "biz_record/version"
+require "biz_record/version"
+require "biz_record/engine"
 
 module BizRecord
   WEEKDAYS = %w[sun mon tue wed thu fri sat].freeze
@@ -39,5 +38,3 @@ module BizRecord
     end
   end
 end
-
-require_relative "biz_record/engine"

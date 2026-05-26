@@ -1,5 +1,3 @@
-# test/models/biz_record/day_test.rb
-
 require "test_helper"
 
 class BizRecord::DayTest < ActiveSupport::TestCase

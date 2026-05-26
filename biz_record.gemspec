@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative "lib/biz_record/version"
 
 Gem::Specification.new do |spec|
