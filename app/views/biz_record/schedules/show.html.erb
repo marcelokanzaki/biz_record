@@ -93,3 +93,19 @@
     <%= link_to "Add break", new_schedule_break_path(@schedule) %>
   </li>
 </ul>
+
+<h2>Holidays</h2>
+
+<ul>
+  <% @schedule.holiday_days.each do |holiday| %>
+    <li>
+      <%= holiday.date %>
+      (<%= link_to "Edit", edit_schedule_holiday_path(@schedule, holiday) %>)
+      (<%= link_to "Remove", schedule_holiday_path(@schedule, holiday), data: { turbo_method: :delete } %>)
+    </li>
+  <% end %>
+
+  <li>
+    <%= link_to "Add holiday", new_schedule_holiday_path(@schedule) %>
+  </li>
+</ul>

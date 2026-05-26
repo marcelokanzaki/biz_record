@@ -15,5 +15,7 @@ BizRecord::Engine.routes.draw do
     resources :breaks, only: %i[new create edit update destroy] do
       resources :intervals, only: interval_actions
     end
+
+    resources :holidays, only: %i[new create edit update destroy]
   end
 end

@@ -1,0 +1,21 @@
+<% if @holiday.errors.any? %>
+  <ul>
+    <% @holiday.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= form_with model: @holiday,
+  scope: :holiday,
+  url: @holiday.persisted? ? schedule_holiday_path(@schedule, @holiday) : schedule_holidays_path(@schedule),
+  method: @holiday.persisted? ? :patch : :post do |form| %>
+  <div>
+    <%= form.label :date %>
+    <%= form.date_field :date %>
+  </div>
+
+  <%= form.submit %>
+<% end %>
+
+<p><%= link_to "Back to schedule", schedule_path(@schedule) %></p>
