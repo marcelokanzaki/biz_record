@@ -10,8 +10,8 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
     schedule = create_schedule!
 
     assert_equal "Etc/UTC", schedule.time_zone
-    assert_instance_of Biz::Schedule, schedule.to_biz_schedule
-    assert schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 10))
+    assert_instance_of Biz::Schedule, schedule.biz_schedule
+    assert schedule.biz_schedule.in_hours?(Time.utc(2026, 5, 18, 10))
   end
 
   test "uses configured default hours" do
@@ -24,8 +24,8 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
     schedule = create_schedule!
 
     assert_equal({ sun: [["10:00", "14:00"]] }, schedule.biz_hours)
-    assert schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 17, 11))
-    refute schedule.to_biz_schedule.in_hours?(Time.utc(2026, 5, 18, 11))
+    assert schedule.biz_schedule.in_hours?(Time.utc(2026, 5, 17, 11))
+    refute schedule.biz_schedule.in_hours?(Time.utc(2026, 5, 18, 11))
   end
 
   test "can belong to a schedulable" do
@@ -47,7 +47,7 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
       }
     )
 
-    biz_schedule = schedule.to_biz_schedule
+    biz_schedule = schedule.biz_schedule
 
     assert biz_schedule.in_hours?(Time.utc(2026, 5, 18, 13))
     refute biz_schedule.in_hours?(Time.utc(2026, 5, 18, 21))

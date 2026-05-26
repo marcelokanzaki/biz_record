@@ -91,7 +91,7 @@ break_day.intervals.create!(starts_at: "12:00", ends_at: "13:00")
 
 schedule.holiday_days.create!(date: "2026-12-25")
 
-schedule.to_biz_schedule.in_hours?(Time.current)
+schedule.biz_schedule.in_hours?(Time.current)
 ```
 
 ## Data Model

@@ -3,7 +3,7 @@ require "biz"
 module BizRecord::Schedule::BizSchedule
   extend ActiveSupport::Concern
 
-  def to_biz_schedule
+  def biz_schedule
     Biz::Schedule.new do |config|
       config.hours     = biz_hours
       config.shifts    = biz_shifts
