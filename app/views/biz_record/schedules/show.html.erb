@@ -63,3 +63,33 @@
     <%= link_to "Add shift", new_schedule_shift_path(@schedule) %>
   </li>
 </ul>
+
+<h2>Breaks</h2>
+
+<ul>
+  <% @schedule.break_days.each do |break_day| %>
+    <li>
+      <%= break_day.date %>
+
+      <ul>
+        <% break_day.intervals.order(:starts_at).each do |interval| %>
+          <li>
+            <%= interval.formatted_starts_at %> ~ <%= interval.formatted_ends_at %>
+            (<%= link_to "Edit", edit_schedule_break_interval_path(@schedule, break_day, interval) %>)
+            (<%= link_to "Remove", schedule_break_interval_path(@schedule, break_day, interval), data: { turbo_method: :delete } %>)
+          </li>
+        <% end %>
+
+        <li>
+          <%= link_to "Add hours", new_schedule_break_interval_path(@schedule, break_day) %>
+        </li>
+      </ul>
+      (<%= link_to "Edit", edit_schedule_break_path(@schedule, break_day) %>)
+      (<%= link_to "Remove", schedule_break_path(@schedule, break_day), data: { turbo_method: :delete } %>)
+    </li>
+  <% end %>
+
+  <li>
+    <%= link_to "Add break", new_schedule_break_path(@schedule) %>
+  </li>
+</ul>

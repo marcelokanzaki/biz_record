@@ -1,0 +1,21 @@
+<% if @break_day.errors.any? %>
+  <ul>
+    <% @break_day.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= form_with model: @break_day,
+  scope: :break,
+  url: @break_day.persisted? ? schedule_break_path(@schedule, @break_day) : schedule_breaks_path(@schedule),
+  method: @break_day.persisted? ? :patch : :post do |form| %>
+  <div>
+    <%= form.label :date %>
+    <%= form.date_field :date %>
+  </div>
+
+  <%= form.submit %>
+<% end %>
+
+<p><%= link_to "Back to schedule", schedule_path(@schedule) %></p>
