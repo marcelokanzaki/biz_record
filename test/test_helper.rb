@@ -6,6 +6,8 @@ ActiveRecord::Migrator.migrations_paths << File.expand_path("../db/migrate", __d
 require "rails/test_help"
 require "debug"
 
+Dir[File.expand_path("support/**/*.rb", __dir__)].sort.each { |f| require f }
+
 module BizRecordTestHelpers
   extend ActiveSupport::Concern
 
