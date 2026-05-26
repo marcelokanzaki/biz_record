@@ -20,7 +20,8 @@ module BizRecord
 
           Next steps:
             bin/rails db:migrate
-            Add has_biz_schedule to each model that owns a schedule.
+            Add include BizRecord::HasSchedule
+            and has_schedule to each model that will have a schedule.
 
         MESSAGE
       end

@@ -1,7 +1,7 @@
 class Account < ApplicationRecord
-  include BizRecord::Schedulable
+  include BizRecord::HasSchedule
 
-  has_biz_schedule
-  has_biz_schedule :support
-  has_biz_schedule :dev
+  has_schedule
+  has_schedule :support
+  has_schedule :dev
 end

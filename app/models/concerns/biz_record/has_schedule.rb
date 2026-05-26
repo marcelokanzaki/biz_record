@@ -1,11 +1,11 @@
 module BizRecord
-  module Schedulable
+  module HasSchedule
     extend ActiveSupport::Concern
 
     class_methods do
-      def has_biz_schedule(name = nil, dependent: :destroy, **options)
+      def has_schedule(name = nil, dependent: :destroy, **options)
         schedule_key = name ? String(name) : BizRecord::Schedule::Key::DEFAULT_KEY
-        association_name = name ? :"#{schedule_key}_schedule" : :biz_schedule
+        association_name = name ? :"#{schedule_key}_schedule" : :schedule
         association_options = {
           as: :schedulable,
           class_name: "BizRecord::Schedule",

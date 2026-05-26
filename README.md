@@ -50,31 +50,31 @@ Weekdays use `biz` keys: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat`.
 
 ## Usage
 
-Include the BizRecord::Schedulable module and declare one or more schedules on the model that owns them:
+Include the BizRecord::HasSchedule module and declare one or more schedules on the model that owns them:
 
 ```ruby
 class Account < ApplicationRecord
-  include BizRecord::Schedulable
+  include BizRecord::HasSchedule
 
-  has_biz_schedule
-  has_biz_schedule :support
-  has_biz_schedule :dev
+  has_schedule
+  has_schedule :support
+  has_schedule :dev
 end
 ```
 
 This defines regular `has_one` associations:
 
 ```ruby
-account.biz_schedule
+account.schedule
 account.support_schedule
 account.dev_schedule
 
-account.create_biz_schedule!
+account.create_schedule!
 account.create_support_schedule!(time_zone: "America/Sao_Paulo")
 ```
 
 `key` identifies the schedule within its owner. The default key is `"default"`;
-named schedules use the name passed to `has_biz_schedule`.
+named schedules use the name passed to `has_schedule`.
 
 Edit the persisted parts through associations:
 
