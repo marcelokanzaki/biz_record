@@ -50,10 +50,12 @@ Weekdays use `biz` keys: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat`.
 
 ## Usage
 
-Declare one or more schedules on the model that owns them:
+Include the BizRecord::Schedulable module and declare one or more schedules on the model that owns them:
 
 ```ruby
 class Account < ApplicationRecord
+  include BizRecord::Schedulable
+
   has_biz_schedule
   has_biz_schedule :support
   has_biz_schedule :dev

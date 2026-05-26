@@ -1,4 +1,3 @@
-require "active_support/lazy_load_hooks"
 require "biz_record/version"
 require "biz_record/engine"
 
@@ -29,12 +28,6 @@ module BizRecord
 
     def reset_configuration!
       @default_hours = nil
-    end
-
-    def install_schedulable
-      ActiveSupport.on_load(:active_record) do
-        include BizRecord::Schedulable
-      end
     end
   end
 end
