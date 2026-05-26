@@ -24,8 +24,8 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
     schedule = create_schedule!
 
     assert_equal({ sun: [["10:00", "14:00"]] }, schedule.biz_hours)
-    assert schedule.biz_schedule.in_hours?(Time.utc(2026, 5, 17, 11))
-    refute schedule.biz_schedule.in_hours?(Time.utc(2026, 5, 18, 11))
+    assert schedule.in_hours?(Time.utc(2026, 5, 17, 11))
+    refute schedule.in_hours?(Time.utc(2026, 5, 18, 11))
   end
 
   test "can belong to a schedulable" do
@@ -47,11 +47,9 @@ class BizRecord::ScheduleTest < ActiveSupport::TestCase
       }
     )
 
-    biz_schedule = schedule.biz_schedule
-
-    assert biz_schedule.in_hours?(Time.utc(2026, 5, 18, 13))
-    refute biz_schedule.in_hours?(Time.utc(2026, 5, 18, 21))
-    assert biz_schedule.on_holiday?(Time.utc(2026, 5, 25, 13))
+    assert schedule.in_hours?(Time.utc(2026, 5, 18, 13))
+    refute schedule.in_hours?(Time.utc(2026, 5, 18, 21))
+    assert schedule.on_holiday?(Time.utc(2026, 5, 25, 13))
   end
 
   test "requires a schedulable" do

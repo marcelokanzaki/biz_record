@@ -17,6 +17,8 @@ module BizRecord
 
     before_validation :set_default_configuration
 
+    delegate :in_hours?, :on_break?, :on_holiday?, :time, :within, :periods, to: :biz_schedule
+
     def self.default_configuration
       {
         "hours"    => BizRecord.default_hours,
