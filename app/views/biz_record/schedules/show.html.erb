@@ -21,14 +21,14 @@
         <% @schedule.intervals.public_send(weekday).order(:starts_at).each do |interval| %>
           <li>
             <%= interval.formatted_starts_at %> ~ <%= interval.formatted_ends_at %>
-            (<%= link_to "Edit", edit_schedule_weekday_interval_path(@schedule, weekday, interval) %>)
-            (<%= link_to "Remove", schedule_weekday_interval_path(@schedule, weekday, interval), data: { turbo_method: :delete } %>)
+            (<%= link_to "Edit", edit_schedule_interval_path(@schedule, interval, weekday: weekday) %>)
+            (<%= link_to "Remove", schedule_interval_path(@schedule, interval, weekday: weekday), data: { turbo_method: :delete } %>)
           </li>
         <% end %>
       <% end %>
 
       <li>
-        <%= link_to "Add hours", new_schedule_weekday_interval_path(@schedule, weekday) %>
+        <%= link_to "Add hours", new_schedule_interval_path(@schedule, weekday: weekday) %>
       </li>
     </ul>
   </div>
