@@ -15,7 +15,7 @@
 
     <ul>
       <% if @schedule.intervals.public_send(weekday).any? %>
-        <% @schedule.intervals.public_send(weekday).order(:starts_at).each do |interval| %>
+        <% @schedule.intervals.public_send(weekday).each do |interval| %>
           <li>
             <%= interval.formatted_starts_at %> ~ <%= interval.formatted_ends_at %>
             (<%= link_to "Edit", edit_schedule_interval_path(@schedule, interval, weekday: weekday) %>)

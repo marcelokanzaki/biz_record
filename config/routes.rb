@@ -1,5 +1,7 @@
 BizRecord::Engine.routes.draw do
-  resources :schedules, only: %i[show] do
+  root to: "schedules#index"
+
+  resources :schedules, only: %i[index show] do
     interval_actions = %i[new create edit update destroy]
 
     with_options path: ":weekday/intervals", constraints: { weekday: Regexp.union(BizRecord::WEEKDAYS) } do

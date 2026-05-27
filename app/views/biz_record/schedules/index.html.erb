@@ -1,0 +1,14 @@
+<h1>Schedules</h1>
+
+<ul>
+  <% @schedules.each do |schedule| %>
+    <li>
+      <%= link_to schedule_path(schedule) do %>
+        <%= schedule.schedulable_type %>
+        <%= schedule.schedulable_id %>
+        <%= schedule.key %>
+        <%= schedule.time_zone %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
