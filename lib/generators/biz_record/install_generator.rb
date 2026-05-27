@@ -18,10 +18,11 @@ module BizRecord
 
           BizRecord installed.
 
-          Next steps:
-            bin/rails db:migrate
-            Add include BizRecord::HasSchedule
-            and has_schedule to each model that will have a schedule.
+          Next run:
+          bin/rails db:migrate
+          ...and add this to each model that will have a schedule:
+          include BizRecord::HasSchedule
+          has_schedule
 
         MESSAGE
       end
