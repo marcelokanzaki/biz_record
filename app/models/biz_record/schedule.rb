@@ -1,8 +1,10 @@
 module BizRecord
   class Schedule < ActiveRecord::Base
-    include Key, Timezone, ConfigurationBundle, BizSchedule
-
     self.table_name = "biz_record_schedules"
+
+    define_model_callbacks :configuration_changed, :time_zone_changed, :reloaded, only: :after
+
+    include Key, Timezone, ConfigurationBundle, BizSchedule
 
     belongs_to :schedulable, polymorphic: true, optional: false
 
@@ -29,12 +31,13 @@ module BizRecord
     end
 
     def configuration=(new_configuration)
-      reset_biz_schedule
-      self[:configuration] = self.class.default_configuration.deep_stringify_keys.deep_merge(new_configuration.deep_stringify_keys)
+      run_callbacks :configuration_changed do
+        self[:configuration] = self.class.default_configuration.deep_stringify_keys.deep_merge(new_configuration.deep_stringify_keys)
+      end
     end
 
     def reload(*args)
-      super.tap { reset_biz_schedule }
+      run_callbacks(:reloaded) { super }
     end
 
     private

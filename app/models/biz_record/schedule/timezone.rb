@@ -10,8 +10,7 @@ module BizRecord::Schedule::Timezone
   end
 
   def time_zone=(value)
-    reset_biz_schedule
-    super
+    run_callbacks(:time_zone_changed) { super }
   end
 
   private
