@@ -3,6 +3,7 @@ require "biz_record/engine"
 
 module BizRecord
   WEEKDAYS = %w[sun mon tue wed thu fri sat].freeze
+
   DEFAULT_HOURS = {
     mon: { "09:00" => "17:00" },
     tue: { "09:00" => "17:00" },
@@ -10,6 +11,8 @@ module BizRecord
     thu: { "09:00" => "17:00" },
     fri: { "09:00" => "17:00" }
   }.transform_values(&:freeze).freeze
+
+  DEFAULT_TIME_ZONE = "Etc/UTC"
 
   class << self
     attr_writer :default_hours
@@ -24,6 +27,10 @@ module BizRecord
 
     def default_hours
       @default_hours || DEFAULT_HOURS
+    end
+
+    def default_time_zone
+      Time.find_zone!(Rails.application.config.time_zone.presence || DEFAULT_TIME_ZONE).tzinfo.identifier
     end
 
     def reset_configuration!

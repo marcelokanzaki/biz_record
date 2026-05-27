@@ -75,6 +75,7 @@ account.create_support_schedule!(time_zone: "America/Sao_Paulo")
 
 `key` identifies the schedule within its owner. The default key is `"default"`;
 named schedules use the name passed to `has_schedule`.
+When `time_zone` is not provided, schedules use the application's configured time zone (Rails.application.config.time_zone).
 
 Edit the persisted parts through associations:
 

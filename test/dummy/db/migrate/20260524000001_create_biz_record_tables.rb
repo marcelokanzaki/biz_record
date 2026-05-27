@@ -3,7 +3,7 @@ class CreateBizRecordTables < ActiveRecord::Migration[7.1]
     create_table :biz_record_schedules do |t|
       t.references :schedulable, polymorphic: true, null: false, index: false
       t.string :key, null: false, default: "default"
-      t.string :time_zone, null: false, default: "Etc/UTC"
+      t.string :time_zone, null: false
       t.json :configuration, null: false
       t.timestamps
     end

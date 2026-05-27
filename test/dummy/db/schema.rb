@@ -43,7 +43,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_24_000001) do
     t.string "key", default: "default", null: false
     t.integer "schedulable_id", null: false
     t.string "schedulable_type", null: false
-    t.string "time_zone", default: "Etc/UTC", null: false
+    t.string "time_zone", null: false
     t.datetime "updated_at", null: false
     t.index ["schedulable_type", "schedulable_id", "key"], name: "index_biz_record_schedules_on_schedulable_and_key", unique: true
   end

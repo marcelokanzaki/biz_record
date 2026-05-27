@@ -18,6 +18,8 @@ module BizRecord
         assert_migration "db/migrate/create_biz_record_schedules.rb" do |migration|
           assert_includes migration, "create_table :biz_record_schedules"
           assert_includes migration, "t.references :schedulable, polymorphic: true, null: false, index: false"
+          assert_includes migration, "t.string :time_zone, null: false"
+          refute_includes migration, 't.string :time_zone, null: false, default: "Etc/UTC"'
           assert_includes migration, "t.public_send(configuration_column_type, :configuration, null: false)"
           assert_includes migration, "[:schedulable_type, :schedulable_id, :key]"
           assert_includes migration, "unique: true"
