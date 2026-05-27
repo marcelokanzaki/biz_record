@@ -10,6 +10,10 @@ module BizRecord
 
     belongs_to :schedule, class_name: "BizRecord::Schedule", inverse_of: :days
 
+    scope :chronological, -> { order(date: :asc) }
+    scope :future,        -> { where(date: Time.current..) }
+    scope :past,          -> { where(date: ...Time.current) }
+
     validates :schedule, presence: true
     validates :date, presence: true
     validates :type, presence: true

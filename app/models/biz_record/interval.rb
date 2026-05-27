@@ -10,6 +10,8 @@ module BizRecord
       scope weekday, -> { where(weekday: weekday) }
     end
 
+    scope :chronological, -> { order(starts_at: :asc) }
+
     validates :owner, presence: true
     validates :starts_at, :ends_at, presence: true
     validates :weekday, inclusion: { in: WEEKDAYS }, allow_nil: true

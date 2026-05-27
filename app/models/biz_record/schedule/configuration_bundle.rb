@@ -21,7 +21,7 @@ module BizRecord::Schedule::ConfigurationBundle
   end
 
   def weekly_hours_bundle
-    intervals_by_weekday = intervals.order(:starts_at).group_by(&:weekday)
+    intervals_by_weekday = intervals.group_by(&:weekday)
 
     BizRecord::WEEKDAYS.each_with_object({}) do |weekday, output_hash|
       interval_records = intervals_by_weekday.fetch(weekday, [])
