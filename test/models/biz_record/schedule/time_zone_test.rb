@@ -1,6 +1,6 @@
 require "test_helper"
 
-class BizRecord::TimezoneTest < ActiveSupport::TestCase
+class BizRecord::TimeZoneTest < ActiveSupport::TestCase
   setup do
     BizRecord::Schedule.delete_all
     Account.delete_all

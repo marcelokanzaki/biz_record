@@ -4,7 +4,7 @@ module BizRecord
 
     define_model_callbacks :configuration_changed, :time_zone_changed, :reloaded, only: :after
 
-    include Key, Timezone, ConfigurationBundle, BizSchedule
+    include Key, TimeZone, ConfigurationBundle, BizSchedule
 
     belongs_to :schedulable, polymorphic: true, optional: false
 
