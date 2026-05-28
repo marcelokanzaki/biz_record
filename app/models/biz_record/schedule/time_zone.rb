@@ -2,6 +2,8 @@ module BizRecord::Schedule::TimeZone
   extend ActiveSupport::Concern
 
   included do
+    define_model_callbacks :time_zone_change, only: :after
+
     before_validation :set_default_time_zone, on: :create
 
     validates :time_zone, presence: true
@@ -9,7 +11,7 @@ module BizRecord::Schedule::TimeZone
   end
 
   def time_zone=(value)
-    run_callbacks(:time_zone_changed) { super }
+    run_callbacks(:time_zone_change) { super }
   end
 
   private

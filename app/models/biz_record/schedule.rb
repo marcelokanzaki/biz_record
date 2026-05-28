@@ -1,10 +1,8 @@
 module BizRecord
   class Schedule < ActiveRecord::Base
+    include BizSchedule, Configuration, TimeZone, Key, Reload
+
     self.table_name = "biz_record_schedules"
-
-    define_model_callbacks :time_zone_changed, :reloaded, only: :after
-
-    include Key, TimeZone, Configuration, BizSchedule
 
     belongs_to :schedulable, polymorphic: true, optional: false
 
@@ -15,9 +13,5 @@ module BizRecord
     has_many :holiday_days, -> { chronological }, class_name: "BizRecord::Days::Holiday", inverse_of: :schedule
 
     validates :schedulable, presence: true
-
-    def reload(*args)
-      run_callbacks(:reloaded) { super }
-    end
   end
 end
