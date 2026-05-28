@@ -2,11 +2,9 @@ module BizRecord
   class Interval < ActiveRecord::Base
     self.table_name = "biz_record_intervals"
 
-    WEEKDAYS = BizRecord::WEEKDAYS
-
     belongs_to :owner, polymorphic: true
 
-    WEEKDAYS.each do |weekday|
+    BizRecord::WEEKDAYS.each do |weekday|
       scope weekday, -> { where(weekday: weekday) }
     end
 
@@ -14,7 +12,7 @@ module BizRecord
 
     validates :owner, presence: true
     validates :starts_at, :ends_at, presence: true
-    validates :weekday, inclusion: { in: WEEKDAYS }, allow_nil: true
+    validates :weekday, inclusion: { in: BizRecord::WEEKDAYS }, allow_nil: true
 
     validate :weekday_attribte_is_for_schedule_intervals
     validate :ends_after_starts
