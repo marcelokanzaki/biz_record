@@ -11,11 +11,6 @@ class BizRecord::KeyTest < ActiveSupport::TestCase
     assert_equal "default", schedule.key
   end
 
-  test "additional keys" do
-    schedule = BizRecord::Schedule.create!(schedulable: account, key: "support")
-    assert_equal schedule, account.support_schedule
-  end
-
   test "key is required" do
     schedule = BizRecord::Schedule.new(key: nil)
     assert_not schedule.valid?

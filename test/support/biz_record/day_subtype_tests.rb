@@ -6,7 +6,7 @@ module BizRecord::DaySubtypeTests
       schedule = create_schedule!
 
       assert_changes -> { schedule.updated_at } do
-        schedule.shift_days.create!(date: "2026-06-01")
+        @klass.create!(schedule: schedule, date: "2026-06-01")
       end
     end
 
@@ -50,17 +50,6 @@ module BizRecord::DaySubtypeTests
 
       assert_not day.valid?
       assert day.errors.where(:date, :taken).any?
-    end
-
-    test "touches schedule" do
-      schedule = create_schedule!
-      original_updated_at = schedule.updated_at
-
-      travel 1.second do
-        @klass.create!(schedule: schedule, date: "2026-06-01")
-      end
-
-      assert_not_equal original_updated_at, schedule.reload.updated_at
     end
   end
 end

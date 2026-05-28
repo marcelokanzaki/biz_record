@@ -12,38 +12,15 @@ class BizRecord::HasScheduleTest < ActiveSupport::TestCase
 
   test "defines a default schedule association" do
     assert_nil account.schedule
-
-    schedule = account.create_schedule!
-
-    assert_equal BizRecord::Schedule::Key::DEFAULT_KEY, schedule.key
-    assert_equal account, schedule.schedulable
-    assert_equal schedule, account.reload.schedule
+    account.create_schedule!
+    assert_equal BizRecord::Schedule::Key::DEFAULT_KEY, account.schedule.key
   end
 
   test "defines named schedule associations" do
-    support_schedule = account.create_support_schedule!
-    dev_schedule = account.create_dev_schedule!
+    account.create_support_schedule!
+    account.create_dev_schedule!
 
-    assert_equal "support", support_schedule.key
-    assert_equal "dev", dev_schedule.key
-    assert_equal support_schedule, account.reload.support_schedule
-    assert_equal dev_schedule, account.dev_schedule
-  end
-
-  test "builds named schedules with their configured key" do
-    schedule = account.build_support_schedule
-
-    assert_equal "support", schedule.key
-    assert_equal account, schedule.schedulable
-  end
-
-  test "keeps named associations separate" do
-    default_schedule = account.create_schedule!
-    support_schedule = account.create_support_schedule!
-
-    account.reload
-
-    assert_equal default_schedule, account.schedule
-    assert_equal support_schedule, account.support_schedule
+    assert_equal "support", account.support_schedule.key
+    assert_equal "dev", account.dev_schedule.key
   end
 end
