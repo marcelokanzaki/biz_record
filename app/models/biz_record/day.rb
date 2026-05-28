@@ -23,9 +23,5 @@ module BizRecord
     after_save    -> { schedule.touch }
     after_destroy -> { schedule.touch }
     after_touch   -> { schedule.touch }
-
-    def to_biz_schedule
-      date&.iso8601
-    end
   end
 end

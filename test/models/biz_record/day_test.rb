@@ -15,13 +15,4 @@ class BizRecord::DayTest < ActiveSupport::TestCase
     assert_not day.valid?
     assert day.errors.where(:type, :inclusion).any?
   end
-
-  test "returns date as biz schedule format" do
-    day = BizRecord::Days::Holiday.new(
-      schedule: create_schedule!,
-      date: Date.new(2026, 6, 1)
-    )
-
-    assert_equal "2026-06-01", day.to_biz_schedule
-  end
 end
