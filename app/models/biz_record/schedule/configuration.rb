@@ -36,7 +36,7 @@ module BizRecord::Schedule::Configuration
   end
 
   def weekly_hours_bundle
-    intervals.group_by(&:weekday).transform_values { |intervals| BizRecord::Interval.to_configuration(intervals) }
+    intervals.group_by(&:weekday).transform_values { |it| BizRecord::Interval.to_configuration(it) }
   end
 
   def days_bundle_for(days)
