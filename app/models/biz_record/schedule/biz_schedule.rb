@@ -7,6 +7,8 @@ module BizRecord::Schedule::BizSchedule
     after_touch :reset_biz_schedule
     after_time_zone_changed :reset_biz_schedule
     after_reloaded :reset_biz_schedule
+
+    delegate :in_hours?, :on_break?, :on_holiday?, :time, :within, :periods, to: :biz_schedule
   end
 
   def biz_schedule

@@ -16,8 +16,6 @@ module BizRecord
 
     validates :schedulable, presence: true
 
-    delegate :in_hours?, :on_break?, :on_holiday?, :time, :within, :periods, to: :biz_schedule
-
     def reload(*args)
       run_callbacks(:reloaded) { super }
     end
