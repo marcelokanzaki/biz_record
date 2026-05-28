@@ -21,6 +21,10 @@ module BizRecord
     after_save    -> { owner.touch }
     after_destroy -> { owner.touch }
 
+    def self.to_configuration(intervals)
+      intervals.to_h { |interval| [interval.formatted_starts_at, interval.formatted_ends_at] }
+    end
+
     def formatted_starts_at
       starts_at&.strftime("%H:%M")
     end

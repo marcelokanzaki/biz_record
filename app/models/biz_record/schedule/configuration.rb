@@ -17,7 +17,7 @@ module BizRecord::Schedule::Configuration
   def build_default_intervals
     BizRecord.default_hours.each do |weekday, hours|
       hours.each do |starts_at, ends_at|
-        intervals.build(weekday: weekday, starts_at: starts_at, ends_at: ends_at)
+        intervals.build(weekday:, starts_at:, ends_at:)
       end
     end
   end
@@ -36,34 +36,17 @@ module BizRecord::Schedule::Configuration
   end
 
   def weekly_hours_bundle
-    intervals_by_weekday = intervals.group_by(&:weekday)
-
-    BizRecord::WEEKDAYS.each_with_object({}) do |weekday, output_hash|
-      interval_records = intervals_by_weekday.fetch(weekday, [])
-      next if interval_records.empty?
-
-      output_hash[weekday] = intervals_hash_from(interval_records)
-    end
+    intervals.group_by(&:weekday).transform_values { |intervals| BizRecord::Interval.to_configuration(intervals) }
   end
 
   def days_bundle_for(days)
-    day_records = days.includes(:intervals)
-
-    day_records.each_with_object({}) do |day, output_hash|
-      interval_records = day.intervals.sort_by(&:starts_at)
-      next if interval_records.empty?
-
-      output_hash[day.to_s] = intervals_hash_from(interval_records)
-    end
+    days.where.associated(:intervals).distinct.includes(:intervals)
+      .index_by(&:date)
+      .transform_values { |day| BizRecord::Interval.to_configuration(day.intervals) }
+      .transform_keys(&:to_s)
   end
 
   def holidays_bundle
-    holiday_days.all.map(&:to_s).uniq.sort
-  end
-
-  def intervals_hash_from(interval_records)
-    interval_records.each_with_object({}) do |interval_record, output_hash|
-      output_hash[interval_record.formatted_starts_at] = interval_record.formatted_ends_at
-    end
+    holiday_days.map(&:date).map(&:to_s)
   end
 end
