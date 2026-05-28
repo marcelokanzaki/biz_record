@@ -1,4 +1,4 @@
-module BizRecord::Schedule::ConfigurationBundle
+module BizRecord::Schedule::Configuration
   extend ActiveSupport::Concern
 
   included do
@@ -17,7 +17,7 @@ module BizRecord::Schedule::ConfigurationBundle
   def build_default_intervals
     BizRecord.default_hours.each do |weekday, hours|
       hours.each do |starts_at, ends_at|
-        intervals.build(weekday: weekday.to_s, starts_at: starts_at, ends_at: ends_at)
+        intervals.build(weekday: weekday, starts_at: starts_at, ends_at: ends_at)
       end
     end
   end

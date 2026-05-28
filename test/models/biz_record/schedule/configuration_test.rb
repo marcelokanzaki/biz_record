@@ -1,6 +1,6 @@
 require "test_helper"
 
-class BizRecord::ConfigurationBundleTest < ActiveSupport::TestCase
+class BizRecord::ConfigurationTest < ActiveSupport::TestCase
   setup do
     BizRecord::Schedule.delete_all
     Account.delete_all
