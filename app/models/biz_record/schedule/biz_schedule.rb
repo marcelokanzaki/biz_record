@@ -5,7 +5,6 @@ module BizRecord::Schedule::BizSchedule
 
   included do
     after_touch :reset_biz_schedule
-    after_configuration_changed :reset_biz_schedule
     after_time_zone_changed :reset_biz_schedule
     after_reloaded :reset_biz_schedule
   end

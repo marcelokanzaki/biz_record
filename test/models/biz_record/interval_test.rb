@@ -16,19 +16,17 @@ class BizRecord::IntervalTest < ActiveSupport::TestCase
 
   test "update touches schedule" do
     schedule = create_schedule!
-    interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
     assert_changes -> { schedule.updated_at } do
-      interval.update!(starts_at: "08:00", ends_at: "16:00")
+      schedule.intervals.mon.first.update!(starts_at: "08:00", ends_at: "16:00")
     end
   end
 
   test "destroy touches schedule" do
     schedule = create_schedule!
-    interval = schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
     assert_changes -> { schedule.updated_at } do
-      interval.destroy!
+      schedule.intervals.mon.first.destroy!
     end
   end
 
@@ -54,7 +52,6 @@ class BizRecord::IntervalTest < ActiveSupport::TestCase
 
   test "rejects overlapping intervals" do
     schedule = create_schedule!
-    schedule.intervals.create!(weekday: "mon", starts_at: "09:00", ends_at: "17:00")
 
     interval = schedule.intervals.build(weekday: "mon", starts_at: "10:00", ends_at: "18:00")
 

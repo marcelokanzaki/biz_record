@@ -2,13 +2,24 @@ module BizRecord::Schedule::ConfigurationBundle
   extend ActiveSupport::Concern
 
   included do
+    before_validation :build_default_intervals
+    before_create -> { self[:configuration] = configuration_bundle }
+
     after_touch :bundle_configuration
+  end
+
+  def configuration=(_)
+    raise NoMethodError, "configuration is derived from schedule records and cannot be assigned directly"
   end
 
   private
 
-  def bundle_configuration
-    update_column(:configuration, configuration_bundle)
+  def build_default_intervals
+    BizRecord.default_hours.each do |weekday, hours|
+      hours.each do |starts_at, ends_at|
+        intervals.build(weekday: weekday.to_s, starts_at: starts_at, ends_at: ends_at)
+      end
+    end
   end
 
   def configuration_bundle
@@ -18,6 +29,10 @@ module BizRecord::Schedule::ConfigurationBundle
       "breaks"   => days_bundle_for(break_days),
       "holidays" => holidays_bundle
     }
+  end
+
+  def bundle_configuration
+    update_column(:configuration, configuration_bundle)
   end
 
   def weekly_hours_bundle

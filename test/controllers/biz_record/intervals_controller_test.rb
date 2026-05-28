@@ -30,8 +30,8 @@ module BizRecord
     test "create (weekday)" do
       schedule = create_schedule!
 
-      assert_difference -> { schedule.intervals.mon.count }, +1 do
-        post biz_record.schedule_intervals_path(schedule, weekday: :mon),
+      assert_difference -> { schedule.intervals.sun.count }, +1 do
+        post biz_record.schedule_intervals_path(schedule, weekday: :sun),
           params: {
             interval: {
               "starts_at(4i)" => "08",
@@ -85,7 +85,7 @@ module BizRecord
 
     test "edit (weekday)" do
       schedule = create_schedule!
-      interval = schedule.intervals.create!(weekday: :mon, starts_at: "08:00", ends_at: "17:00")
+      interval = schedule.intervals.mon.first
 
       get biz_record.edit_schedule_interval_path(schedule, interval, weekday: :mon)
 
@@ -114,7 +114,7 @@ module BizRecord
 
     test "update (weekday)" do
       schedule = create_schedule!
-      interval = schedule.intervals.create!(weekday: :mon, starts_at: "08:00", ends_at: "17:00")
+      interval = schedule.intervals.mon.first
 
       patch biz_record.schedule_interval_path(schedule, interval, weekday: :mon),
         params: {
@@ -179,7 +179,7 @@ module BizRecord
 
     test "destroy (weekday)" do
       schedule = create_schedule!
-      interval = schedule.intervals.create!(weekday: :mon, starts_at: "08:00", ends_at: "17:00")
+      interval = schedule.intervals.mon.first
 
       assert_difference -> { schedule.intervals.count }, -1 do
         delete biz_record.schedule_interval_path(schedule, interval, weekday: :mon)
