@@ -14,6 +14,8 @@ module BizRecord
 
   DEFAULT_TIME_ZONE = "Etc/UTC"
 
+  DEFAULT_KEY = "default"
+
   class << self
     attr_writer :default_hours
 

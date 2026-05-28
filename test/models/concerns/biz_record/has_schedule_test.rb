@@ -13,7 +13,7 @@ class BizRecord::HasScheduleTest < ActiveSupport::TestCase
   test "defines a default schedule association" do
     assert_nil account.schedule
     account.create_schedule!
-    assert_equal BizRecord::Schedule::Key::DEFAULT_KEY, account.schedule.key
+    assert_equal BizRecord::DEFAULT_KEY, account.schedule.key
   end
 
   test "defines named schedule associations" do
