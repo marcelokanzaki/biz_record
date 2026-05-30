@@ -1,5 +1,5 @@
 module BizRecord
-  class IntervalsController < ApplicationController
+  class Schedules::IntervalsController < ApplicationController
     before_action :set_schedule
     before_action :set_interval_owner
     before_action :set_interval, only: %i[edit update destroy]

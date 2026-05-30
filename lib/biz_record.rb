@@ -16,6 +16,12 @@ module BizRecord
 
   DEFAULT_KEY = "default"
 
+  DAY_TYPES = %w[
+    BizRecord::Days::Shift
+    BizRecord::Days::Break
+    BizRecord::Days::Holiday
+  ].freeze
+
   class << self
     attr_writer :default_hours
 

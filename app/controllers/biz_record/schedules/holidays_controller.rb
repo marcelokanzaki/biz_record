@@ -1,5 +1,5 @@
 module BizRecord
-  class HolidaysController < ApplicationController
+  class Schedules::HolidaysController < ApplicationController
     before_action :set_schedule
     before_action :set_holiday, only: %i[edit update destroy]
 

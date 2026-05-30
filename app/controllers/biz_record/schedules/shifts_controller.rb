@@ -1,5 +1,5 @@
 module BizRecord
-  class ShiftsController < ApplicationController
+  class Schedules::ShiftsController < ApplicationController
     before_action :set_schedule
     before_action :set_shift, only: %i[edit update destroy]
 

@@ -1,5 +1,5 @@
 module BizRecord
-  class BreaksController < ApplicationController
+  class Schedules::BreaksController < ApplicationController
     before_action :set_schedule
     before_action :set_break_day, only: %i[edit update destroy]
 
